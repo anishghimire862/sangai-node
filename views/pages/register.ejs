@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+  <html lang="en">
+    <%- include ('../partials/common/head', { title:'SANGAI - Create Account' }) %>
+  <body>
+    <%- include('../partials/common/navbar') %>
+    <div class="px-5">
+      <% if (messages.error) { %>
+        <%- include('../partials/components/alerts/error', { message: messages.error }) %>
+      <% } %>
+      <%- include('../partials/register', { user: user, formErrors: formErrors }) %> 
+    </div>
+    <%- include('../partials/common/footer') %>
+  </body>
+</html>

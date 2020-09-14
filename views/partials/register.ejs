@@ -1,0 +1,45 @@
+<div class="row justify-content-center pt-2">
+  <div class="card p-3" style="width: 50rem;">
+    <form class="row" method="POST" action="/register">
+      <div class="form-group col-12">
+        <label>Email</label>
+        <input type="" name="email" class="form-control" value="<%= user.email %>" />
+        <% if(formErrors.length > 0) { %>
+          <% formErrors.forEach(function(error) { %>
+            <% if (error.param == 'email') { %>
+              <p class="text-danger mb-0"> <%= error.msg %> </p>
+            <% } %>
+          <% }) %>
+        <% } %>
+      </div>
+      <div class="form-group col-12">
+        <label>Username</label>
+        <input type="text" name="username" class="form-control" value="<%= user.username %>" />
+        <% if(formErrors.length > 0) { %>
+          <% formErrors.forEach(function(error) { %>
+            <% if (error.param == 'username') { %>
+              <p class="text-danger mb-0"> <%= error.msg %> </p>
+            <% } %>
+          <% }) %>
+        <% } %>
+      </div>
+      <div class="form-group col-12">
+        <label>Password</label>
+        <input type="password" name="password" class="form-control" value="<%= user.password %>" />
+        <% if(formErrors.length > 0) { %>
+          <% formErrors.forEach(function(error) { %>
+            <% if (error.param == 'password') { %>
+              <p class="text-danger mb-0"> <%= error.msg %> </p>
+            <% } %>
+          <% }) %>
+        <% } %>
+      </div>
+      <div class="form-group col-12">
+        Already have an account? <a href="/"> Login now </a>
+      </div>    
+      <div class="form-group col-12">
+        <button type="submit" class="btn btn-primary">Register</button>
+      </div>
+    </form>    
+  </div>
+</div>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+  <html lang="en">
+    <%- include ('../partials/common/head', { title:'SANGAI' }) %>
+  <body>
+    <%- include('../partials/common/navbar') %>
+    <div class="px-5">
+      <% if (messages.success) { %>
+        <%- include('../partials/components/alerts/success', { message: messages.success }) %>
+      <% } %>
+      <% if (messages.error) { %>
+        <%- include('../partials/components/alerts/error', { message: messages.error }) %>
+      <% } %>
+      <%- include('../partials/login') %> 
+    </div>
+    <%- include('../partials/common/footer') %>
+  </body>
+</html>
