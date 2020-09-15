@@ -1,6 +1,6 @@
 <div class="pt-2">
   <ul class="nav nav-tabs">
-    <li class="nav-item">
+    <li class="nav-item" id="aaa">
       <a class="nav-link active" data-toggle="tab" href="#tab_01">
         Chat
       </a>
@@ -27,7 +27,9 @@
     </div>
   </div>
 </div>
+<script src="/socket.io/socket.io.js"></script>
 <script>
+  const socket = io();
   $(".nav-tabs").on("click", "a", function(e) {
     e.preventDefault();
     if(!$(this).hasClass('open-new-tab')) {
@@ -46,8 +48,20 @@
     id++;
     var tabId = 'tab_' + id;
     const chatbox = `<%- include('./chatbox.ejs') %>`;
-    $(".nav-tabs").append('<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab_' + id + '"> New Tab </a> <span>x</span> </li>');
-    $('.tab-content').append('<div class="tab-pane fade" id="' + tabId + '">'+ chatbox + '</div>');
+    $(".nav-tabs").append(`<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab_${id}"> New Tab </a> <span>x</span> </li>`);
+    $('.tab-content').append(`<div class="tab-pane fade" id="${tabId}"> ${chatbox}</div>`);
     $('.nav-tabs li:nth-child(' + id + ') a').click();
   })
+
+  // chat 
+  $(function () {
+    $(document).on("click", "#sendMessageButton", function() {
+      socket.emit('chat message', $('#messageContent').val());
+      $('#messageContent').val('');
+      return false;
+    });
+    socket.on('chat message', function(message) {
+      $('#messages').append($('<li>').text(message));
+    })
+  });
 </script>
