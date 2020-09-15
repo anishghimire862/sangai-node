@@ -5,9 +5,6 @@
         Chat
       </a>
     </li>
-    <!-- <li>
-      <a href="#" class="open">+ Add Contact</a>
-    </li> -->
   </ul>
   <div class="tab-content">
     <div class="tab-pane active" id="tab_01">
@@ -49,9 +46,8 @@
     id++;
     var tabId = 'tab_' + id;
     const chatbox = `<%- include('./chatbox.ejs') %>`;
-    // $(".open").closest('li').before('<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab_' + id + '"> New Tab </a> <span> x </span></li>');
     $(".nav-tabs").append('<li class="nav-item"><a class="nav-link" data-toggle="tab" href="#tab_' + id + '"> New Tab </a> <span>x</span> </li>');
-    $('.tab-content').append('<div class="tab-pane fade" id="' + tabId + '">Chat Form: New Contact ' + id+ ' '+ chatbox + '</div>');
+    $('.tab-content').append('<div class="tab-pane fade" id="' + tabId + '">'+ chatbox + '</div>');
     $('.nav-tabs li:nth-child(' + id + ') a').click();
   })
 </script>
