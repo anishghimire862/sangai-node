@@ -1,5 +1,5 @@
 const conn = require('../database');
-const userController = require('../controllers/user');
+const userController = require('../functions/user');
 const { body, validationResult } = require('express-validator');
 let session;
 module.exports = function(app) {
@@ -78,6 +78,7 @@ module.exports = function(app) {
         if(data.length > 0) {
           session = req.session;
           req.session.loggedIn = true;
+          req.session.loggedInUser = data[0]
           res.redirect('/home')
         } else {
           req.flash('error', 'Incorrect username/email or password.');
