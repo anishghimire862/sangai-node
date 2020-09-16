@@ -21,6 +21,11 @@ app.use(session({
   rolling: true,
   cookie: { maxAge: 60000 * 60 * 24 }
 }));
+app.use(function(req, res, next) {
+  res.locals.loggedInUser = req.session.loggedInUser;
+  res.locals.loggedIn = req.session.loggedIn;
+  next();
+})
 app.use(flash());
 
 require('./routes/route')(app);
