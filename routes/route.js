@@ -1,5 +1,5 @@
 const conn = require('../database');
-const userController = require('../functions/user');
+const userFunction = require('../functions/user');
 const { body, validationResult } = require('express-validator');
 let session;
 module.exports = function(app) {
@@ -17,8 +17,9 @@ module.exports = function(app) {
   });
 
   // place isLoggedIn after '/home', isLoggedIn
-  app.get('/home', function(req, res) {
-    res.render('home');
+  app.get('/home', async function(req, res) {
+    let allUsers = await userFunction.getAllUsers();
+    res.render('home', { allUsers: allUsers });
     // req.session.loggedIn ? res.render('home') : res.render('index');
   })
 
@@ -43,8 +44,8 @@ module.exports = function(app) {
       res.render('register', { user: user, formErrors: formErrors });
     }
 
-    const isEmailExists = await userController.checkIfUserEmailExists(user.email);
-    const isUsernameExists = await userController.checkIfUsernameExists(user.username);
+    const isEmailExists = await userFunction.checkIfUserEmailExists(user.email);
+    const isUsernameExists = await userFunction.checkIfUsernameExists(user.username);
     if(isEmailExists) {
       req.flash('error', 'Email already exists. Please select another email.')
       res.render('register', { user: user, formErrors: formErrors });
