@@ -1,5 +1,5 @@
 const conn = require('../database');
-module.exports = {
+module.exports =  {
   checkIfUserEmailExists (email) {
     return new Promise((resolve, reject) => {
       conn.query('SELECT * FROM users WHERE email=?', [email], (error, result, fields) => {
@@ -8,7 +8,7 @@ module.exports = {
       })
     })
   },
-
+  
   checkIfUsernameExists (username) {
     return new Promise((resolve, reject) => {
       conn.query('SELECT * FROM users WHERE username=?', [username], (error, result, fields) => {
@@ -16,5 +16,14 @@ module.exports = {
         result.length > 0 ? resolve(true) : resolve(false);
       })
     })
+  },
+  
+  getAllUsers (req, res) {
+    return new Promise((resolve, reject) => {
+      conn.query('SELECT * FROM users', (error, result, fields) => {
+        if(error) reject(err);
+        resolve(result)
+      })
+    })
   }
-} 
+}
