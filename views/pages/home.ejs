@@ -4,6 +4,11 @@
   <body onload="loadHomePage()">
     <nav class="navbar fixed-top navbar-light">
       <a class="navbar-brand text-white" href="#">SANGAI</a>
+      <% if(loggedInUser) { %>
+        <span class="text-white" id="currentUser">
+          <%- loggedInUser.username %>
+        </span>
+      <% } %>
       <a class="text-white" href="/logout"> Logout </a>
     </nav>    
     <div class="container-fluid">
@@ -16,7 +21,6 @@
 
       <div id="page-home" class="active">
         <div class="block">
-          <!-- <%- include('../partials/components/chattab.ejs', {allUsers: allUsers}) %> -->
           <div class="pt-2">
             <ul class="nav nav-tabs">
               <li class="nav-item">
@@ -30,7 +34,7 @@
                 Online Friends
                 <% allUsers.forEach(function(user) { %>
                   <li class="users-list">
-                    <a href="#" class="open-new-tab" id="user_<%- user.username %>">
+                    <a href="#" class="open-new-tab" id="user_<%- user.username %>" ;">
                       <%- user.username %>
                     </a>
                   </li>
@@ -43,79 +47,14 @@
 
       <div id="page-feed" class="inactive">
         <h1>Feed Page</h1>
-        <div class="block">
-          <h2>The standard Lorem Ipsum passage, used since the 1500s</h2>
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-          Section 1.10.32 of "de Finibus Bonorum et Malorum", written by Cicero in 45 BC
-        </div>
-        <div class="block">
-          <h2>The standard Lorem Ipsum passage</h2>
-
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-          Section 1.10.32 of "de Finibus Bonorum et Malorum", written by Cicero in 45 BC
-        </div>
-        <div class="block">
-          <h2>The standard Lorem Ipsum passage</h2>
-
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-          Section 1.10.32 of "de Finibus Bonorum et Malorum", written by Cicero in 45 BC
-        </div>
       </div>
 
       <div id="page-create" class="inactive">
         <h1>Create Page</h1>
-        <form>
-          <div class="form-row">
-            <div class="form-group col-md-6">
-              <label for="inputEmail4" class="col-form-label">Email</label>
-              <input type="email" class="form-control" id="inputEmail4" placeholder="Email">
-            </div>
-            <div class="form-group col-md-6">
-              <label for="inputPassword4" class="col-form-label">Password</label>
-              <input type="password" class="form-control" id="inputPassword4" placeholder="Password">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="inputAddress" class="col-form-label">Address</label>
-            <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St">
-          </div>
-          <div class="form-group">
-            <label for="inputAddress2" class="col-form-label">Address 2</label>
-            <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
-          </div>
-          <div class="form-row">
-            <div class="form-group col-md-6">
-              <label for="inputCity" class="col-form-label">City</label>
-              <input type="text" class="form-control" id="inputCity">
-            </div>
-            <div class="form-group col-md-4">
-              <label for="inputState" class="col-form-label">State</label>
-              <select id="inputState" class="form-control">Choose</select>
-            </div>
-            <div class="form-group col-md-2">
-              <label for="inputZip" class="col-form-label">Zip</label>
-              <input type="text" class="form-control" id="inputZip">
-            </div>
-          </div>
-          <div class="form-group">
-            <div class="form-check">
-              <label class="form-check-label">
-              <input class="form-check-input" type="checkbox"> Check me out
-              </label>
-            </div>
-          </div>
-          <button type="submit" class="btn btn-primary">Sign in</button>
-        </form>
       </div>
 
       <div id="page-account" class="inactive">
         <h2>Account Page</h2>
-        <div class="block">
-          <h2>The standard Lorem Ipsum passage</h2>
-
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-          Section 1.10.32 of "de Finibus Bonorum et Malorum", written by Cicero in 45 BC
-        </div>
       </div>
     </div>
     <footer class="footer">
@@ -149,6 +88,9 @@
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io();
+      let conversation_id = $('#currentUser').text().trim();
+      socket.emit('subscribe', conversation_id);
+
       $(".nav-tabs").on("click", "a", function(e) {
         e.preventDefault();
         if(!$(this).hasClass('open-new-tab')) {
@@ -177,11 +119,10 @@
           var id = $(".nav-tabs").children().length;
           id++;
           var tabId = 'tab_' + id;
-          // const chatbox = `<%- include('../partials/components/chatbox.ejs') %>`;
           const chatBox = `
-            <div class="container position-fixed" style="width: 100%; left: 0; right: 0;">
+            <div class="container position-fixed" style="width: 100%; left: 0; right: 0;" id="message_box">
               <div class="card bg-color" style="width: 100%; height: 65vh;">
-                <div class="card-header" id="clickHere">
+                <div class="card-header">
                   anishghimire
                 </div>
                 <div class="card-body overflow-auto" style="width: 100%; height: 65vw;">
@@ -194,6 +135,7 @@
                 <div class="card-footer text-muted p-1">
                   <form action="#" id="messageForm">
                     <div class="input-group">
+                      <input type="hidden" value="${userName}" id="receiverUserName" />
                       <textarea class="form-control" id="messageContent" rows="1" placeholder="Type your message here..." required style="resize:none"></textarea>
                       <button class="btn btn-primary input-group-addon ml-1" id="sendMessageButton">Send</button>
                     </div>
@@ -219,13 +161,24 @@
 
       // chat 
       $(function () {
-        $(document).on("click", "#sendMessageButton", function() {
-          socket.emit('chat message', $('#messageContent').val());
-          $('#messageContent').val('');
+        $(document).on("submit", "#message_box", function(e) {
+          const receiverUserName = $(this).find('#receiverUserName').val();
+          const senderUserName = $('#currentUser').text().trim();
+          const message = $(this).find('#messageContent').val();
+          console.log(`sending message from ${senderUserName} to ${receiverUserName}`);
+
+          socket.emit('send_private_message', {
+            room: receiverUserName,
+            message: message
+          })
+
+          $('#messages').append($(`<li> <span class="text-secondary">${senderUserName} </span> : ${message}</li>`));
+
+          $(this).find('#messageContent').val('');
           return false;
-        });
-        socket.on('chat message', function(message) {
-          $('#messages').append($('<li>').text(message));
+        })
+        socket.on('conversation private post', function(message) {
+          $('#messages').append($(`<li> <span class="text-success">${$('#receiverUserName').val()} </span> : ${message.message}</li>`));
         })
       });
     </script>
