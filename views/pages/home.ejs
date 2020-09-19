@@ -31,14 +31,9 @@
             </ul>
             <div class="tab-content">
               <div class="tab-pane active" id="chat_home_tab">
-                Online Friends
-                <% allUsers.forEach(function(user) { %>
-                  <li class="users-list">
-                    <a href="#" class="open-new-tab" id="user_<%- user.username %>" ;">
-                      <%- user.username %>
-                    </a>
-                  </li>
-                <% }); %>
+                Online Users
+                <ul id="usersList">
+                </ul>
               </div>
             </div>
           </div>
@@ -90,6 +85,25 @@
       const socket = io();
       let conversation_id = $('#currentUser').text().trim();
       socket.emit('subscribe', conversation_id);
+      socket.emit('new_user', conversation_id);
+      receiverUserName = '';
+      var currentUser = $('#currentUser').text().trim();
+
+      socket.on('render_new_users', function(data) {
+        let onlineUsersList = [];
+        $('#usersList').empty();
+        let usersExceptLoggedUser = data.filter((user) => user !== conversation_id);
+        $.each(usersExceptLoggedUser, function(index, user) {
+          onlineUsersList.push(`
+            <li class="users-list">
+              <a href="#" class="open-new-tab" id="user_${user}">
+                ${user}
+              </a>
+            </li>
+          `);
+        })
+        $('#usersList').append(onlineUsersList.join(''));
+      })
 
       $(".nav-tabs").on("click", "a", function(e) {
         e.preventDefault();
@@ -104,15 +118,24 @@
         $(".nav-tabs li").children('a').first().click();
       });
 
-      $('.open-new-tab').click(function(e){
+      // set receiver userName in the global scope
+
+      $(document).on('click', '.open-new-tab', function(e) {
+        receiverUserName = $(this).attr('id').substr(5);
+      });
+
+      $(document).on('click', '.update-user-name', function(e) {
+        receiverUserName = $(this).attr('id').substr(5);
+      });
+      
+
+      $(document).on('click', '.open-new-tab', function(e){
         e.preventDefault();
-        let userName = $(this).attr('id').substr(5);
 
         // the if block will execute when a chat tab is already opened
         // this will take user to the opened tab instead of creating a new chat tab
-
-        if($(`.nav-link#user_${userName}`).length > 0) {
-          const listItem = $(`#user_list_${userName}`)
+        if($(`.nav-link#user_${receiverUserName}`).length > 0) {
+          const listItem = $(`#user_list_${receiverUserName}`)
           const tabIndex = $('li').index(listItem);
           $(`.nav-tabs li:nth-child(${tabIndex + 1}) a`).click();
         } else {
@@ -120,22 +143,22 @@
           id++;
           var tabId = 'tab_' + id;
           const chatBox = `
-            <div class="container position-fixed" style="width: 100%; left: 0; right: 0;" id="message_box">
+            <div class="container position-fixed" style="width: 100%; left: 0; right: 0;" id="message_container">
               <div class="card bg-color" style="width: 100%; height: 65vh;">
                 <div class="card-header">
                   anishghimire
                 </div>
                 <div class="card-body overflow-auto" style="width: 100%; height: 65vw;">
-                  <ul id="messages">
+                  <ul id="messages_${receiverUserName}">
                     <li> 
                       Hi!! it feels like home to me.
                     </li>
                   </ul>
                 </div>
                 <div class="card-footer text-muted p-1">
-                  <form action="#" id="messageForm">
+                  <form action="#" id="messageForm_${receiverUserName}">
                     <div class="input-group">
-                      <input type="hidden" value="${userName}" id="receiverUserName" />
+                      <input type="hidden" value="${receiverUserName}" id="receiverUserName" />
                       <textarea class="form-control" id="messageContent" rows="1" placeholder="Type your message here..." required style="resize:none"></textarea>
                       <button class="btn btn-primary input-group-addon ml-1" id="sendMessageButton">Send</button>
                     </div>
@@ -145,40 +168,40 @@
             </div>
           `;
           $(".nav-tabs").append(`
-            <li class="nav-item" id="user_list_${userName}">
-              <a class="nav-link" data-toggle="tab" href="#tab_user_${userName}" id="user_${userName}"> 
-                ${userName} 
+            <li class="nav-item" id="user_list_${receiverUserName}">
+              <a class="nav-link update-user-name" data-toggle="tab" href="#tab_user_${receiverUserName}" id="user_${receiverUserName}"> 
+                ${receiverUserName} 
               </a>
               <span>
                 x
               </span> 
             </li>
           `);
-          $('.tab-content').append(`<div class="tab-pane fade ${userName}" id="tab_user_${userName}"> ${chatBox} </div>`);
+          $('.tab-content').append(`<div class="tab-pane fade ${receiverUserName}" id="tab_user_${receiverUserName}"> ${chatBox} </div>`);
           $('.nav-tabs li:nth-child(' + id + ') a').click();
         }
       })
 
       // chat 
       $(function () {
-        $(document).on("submit", "#message_box", function(e) {
-          const receiverUserName = $(this).find('#receiverUserName').val();
-          const senderUserName = $('#currentUser').text().trim();
+        $(document).on("submit", `#message_container`, function(e) {
+          e.preventDefault();
           const message = $(this).find('#messageContent').val();
-          console.log(`sending message from ${senderUserName} to ${receiverUserName}`);
+          console.log(`sending message from ${currentUser} to ${receiverUserName}`);
 
           socket.emit('send_private_message', {
             room: receiverUserName,
+            from: currentUser,
             message: message
           })
-
-          $('#messages').append($(`<li> <span class="text-secondary">${senderUserName} </span> : ${message}</li>`));
+          console.log('receiver', receiverUserName)
+          $(this).find(`#messages_${receiverUserName}`).append($(`<li> <span class="text-secondary">${currentUser} </span> : ${message}</li>`));
 
           $(this).find('#messageContent').val('');
           return false;
         })
-        socket.on('conversation private post', function(message) {
-          $('#messages').append($(`<li> <span class="text-success">${$('#receiverUserName').val()} </span> : ${message.message}</li>`));
+        socket.on('receive_private_message_on_client', function(message) {
+          $(`#messages_${message.from}`).append($(`<li> <span class="text-success">${message.from} </span> : ${message.message}</li>`));
         })
       });
     </script>
