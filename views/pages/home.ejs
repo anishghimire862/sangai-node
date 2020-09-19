@@ -194,15 +194,31 @@
             message: message
           })
           console.log('receiver', receiverUserName)
-          $(this).find(`#messages_${receiverUserName}`).append($(`<li> <span class="text-secondary">${currentUser} </span> : ${message}</li>`));
+          appendMessage(receiverUserName, currentUser, message, false);
+          // $(this).find(`#messages_${receiverUserName}`).append($(`<li> <span class="text-secondary">${currentUser} </span> : ${message}</li>`));
 
           $(this).find('#messageContent').val('');
           return false;
         })
         socket.on('receive_private_message_on_client', function(message) {
-          $(`#messages_${message.from}`).append($(`<li> <span class="text-success">${message.from} </span> : ${message.message}</li>`));
+          appendMessage(message.from, message.from, message.message, true)
+          // $(`#messages_${message.from}`).append($(`<li> <span class="text-success">${message.from} </span> : ${message.message}</li>`));
         })
       });
+
+      function appendMessage (messageId, from, message, isReceivedMessage) {
+        let userNameColor = isReceivedMessage ? 'text-success' : 'text-secondary';
+        $(`#messages_${messageId}`).append($(`
+          <li> 
+            <span class="${userNameColor}">
+              ${from}
+            </span>
+            :
+            ${message}
+          </li>
+        `));
+      }
+
     </script>
     <%- include('../partials/common/footer') %>
   </body>
