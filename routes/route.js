@@ -16,8 +16,7 @@ module.exports = function(app) {
     req.session.loggedIn ? res.redirect('/home') : res.render('register', { user: user, formErrors: []});
   });
 
-  // place isLoggedIn after '/home', isLoggedIn
-  app.get('/home', async function(req, res) {
+  app.get('/home', isLoggedIn, async function(req, res) {
     let allUsers = await userFunction.getAllUsers();
     res.render('home', { allUsers: allUsers });
     // req.session.loggedIn ? res.render('home') : res.render('index');
