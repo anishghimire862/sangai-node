@@ -20,7 +20,6 @@ function changePage() {
   var page = document.getElementById(pageId);
   var pageSelector = document.getElementById(this.id);
   if(page.classList.contains("active")){
-    console.log('hello')
     return;
   }
 

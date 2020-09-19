@@ -2,10 +2,12 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const flash = require('express-flash');
 const cookieParser = require('cookie-parser');
-// const expressValidator = require('express-validator');
 const session = require('express-session');
+const socket = require('./lib/socket');
 
 const app = express();
+const http = require('http').createServer(app);
+socket.listen(http);
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -19,6 +21,11 @@ app.use(session({
   rolling: true,
   cookie: { maxAge: 60000 * 60 * 24 }
 }));
+app.use(function(req, res, next) {
+  res.locals.loggedInUser = req.session.loggedInUser;
+  res.locals.loggedIn = req.session.loggedIn;
+  next();
+})
 app.use(flash());
 
 require('./routes/route')(app);
@@ -28,4 +35,6 @@ app.set('view engine','ejs');
 
 const conn = require('./database');
 
-app.listen(3000, () => console.log("Server is Running..."));
+http.listen(3000, () => {
+  console.log("Server is Running...")
+});

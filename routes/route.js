@@ -1,5 +1,5 @@
 const conn = require('../database');
-const userController = require('../controllers/user');
+const userFunction = require('../functions/user');
 const { body, validationResult } = require('express-validator');
 let session;
 module.exports = function(app) {
@@ -16,9 +16,9 @@ module.exports = function(app) {
     req.session.loggedIn ? res.redirect('/home') : res.render('register', { user: user, formErrors: []});
   });
 
-  // place isLoggedIn after '/home', isLoggedIn
-  app.get('/home', function(req, res) {
-    res.render('home');
+  app.get('/home', isLoggedIn, async function(req, res) {
+    let allUsers = await userFunction.getAllUsers();
+    res.render('home', { allUsers: allUsers });
     // req.session.loggedIn ? res.render('home') : res.render('index');
   })
 
@@ -43,8 +43,8 @@ module.exports = function(app) {
       res.render('register', { user: user, formErrors: formErrors });
     }
 
-    const isEmailExists = await userController.checkIfUserEmailExists(user.email);
-    const isUsernameExists = await userController.checkIfUsernameExists(user.username);
+    const isEmailExists = await userFunction.checkIfUserEmailExists(user.email);
+    const isUsernameExists = await userFunction.checkIfUsernameExists(user.username);
     if(isEmailExists) {
       req.flash('error', 'Email already exists. Please select another email.')
       res.render('register', { user: user, formErrors: formErrors });
@@ -78,6 +78,7 @@ module.exports = function(app) {
         if(data.length > 0) {
           session = req.session;
           req.session.loggedIn = true;
+          req.session.loggedInUser = data[0]
           res.redirect('/home')
         } else {
           req.flash('error', 'Incorrect username/email or password.');
