@@ -131,12 +131,60 @@
 
       $(document).on('click', '.open-new-tab', function(e){
         e.preventDefault();
+        openNewTab(receiverUserName, true);
+      })
+
+      // chat 
+      $(function () {
+        $(document).on("submit", `#message_container`, function(e) {
+          e.preventDefault();
+          const message = $(this).find('#messageContent').val();
+          console.log(`sending message from ${currentUser} to ${receiverUserName}`);
+
+          socket.emit('send_private_message', {
+            room: receiverUserName,
+            from: currentUser,
+            message: message
+          })
+          console.log('receiver', receiverUserName)
+          appendMessage(receiverUserName, currentUser, message, false);
+          // $(this).find(`#messages_${receiverUserName}`).append($(`<li> <span class="text-secondary">${currentUser} </span> : ${message}</li>`));
+
+          $(this).find('#messageContent').val('');
+          return false;
+        })
+        socket.on('receive_private_message_on_client', function(message) {
+          openNewTab(message.from, false);
+          appendMessage(message.from, message.from, message.message, true)
+          // $(`#messages_${message.from}`).append($(`<li> <span class="text-success">${message.from} </span> : ${message.message}</li>`));
+        })
+      });
+
+      function appendMessage (messageId, from, message, isReceivedMessage) {
+        let userNameColor = isReceivedMessage ? 'text-success' : 'text-secondary';
+        $(`#messages_${messageId}`).append($(`
+          <li> 
+            <span class="${userNameColor}">
+              ${from}
+            </span>
+            :
+            ${message}
+          </li>
+        `));
+      }
+
+      function openNewTab(receiverUserName, shouldRedirectToTab) {
         // the if block will execute when a chat tab is already opened
         // this will take user to the opened tab instead of creating a new chat tab
         if($(`.nav-link#user_${receiverUserName}`).length > 0) {
-          const listItem = $(`#user_list_${receiverUserName}`)
-          const tabIndex = $('li').index(listItem);
-          $(`.nav-tabs li:nth-child(${tabIndex + 1}) a`).click();
+          // on incoming messages just open the tab but dont redirect to the tab
+          if(shouldRedirectToTab) {
+            const listItem = $(`#user_list_${receiverUserName}`)
+            const tabIndex = $('li').index(listItem);
+            $(`.nav-tabs li:nth-child(${tabIndex + 1}) a`).click();
+          } else {
+            return false;
+          }
         } else {
           var id = $(".nav-tabs").children().length;
           id++;
@@ -177,46 +225,10 @@
             </li>
           `);
           $('.tab-content').append(`<div class="tab-pane fade ${receiverUserName}" id="tab_user_${receiverUserName}"> ${chatBox} </div>`);
-          $('.nav-tabs li:nth-child(' + id + ') a').click();
+          if(shouldRedirectToTab) {
+            $('.nav-tabs li:nth-child(' + id + ') a').click();
+          }
         }
-      })
-
-      // chat 
-      $(function () {
-        $(document).on("submit", `#message_container`, function(e) {
-          e.preventDefault();
-          const message = $(this).find('#messageContent').val();
-          console.log(`sending message from ${currentUser} to ${receiverUserName}`);
-
-          socket.emit('send_private_message', {
-            room: receiverUserName,
-            from: currentUser,
-            message: message
-          })
-          console.log('receiver', receiverUserName)
-          appendMessage(receiverUserName, currentUser, message, false);
-          // $(this).find(`#messages_${receiverUserName}`).append($(`<li> <span class="text-secondary">${currentUser} </span> : ${message}</li>`));
-
-          $(this).find('#messageContent').val('');
-          return false;
-        })
-        socket.on('receive_private_message_on_client', function(message) {
-          appendMessage(message.from, message.from, message.message, true)
-          // $(`#messages_${message.from}`).append($(`<li> <span class="text-success">${message.from} </span> : ${message.message}</li>`));
-        })
-      });
-
-      function appendMessage (messageId, from, message, isReceivedMessage) {
-        let userNameColor = isReceivedMessage ? 'text-success' : 'text-secondary';
-        $(`#messages_${messageId}`).append($(`
-          <li> 
-            <span class="${userNameColor}">
-              ${from}
-            </span>
-            :
-            ${message}
-          </li>
-        `));
       }
 
     </script>
