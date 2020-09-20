@@ -22,7 +22,7 @@
       <div id="page-home" class="active">
         <div class="block">
           <div class="pt-2">
-            <ul class="nav nav-tabs">
+            <ul class="nav nav-tabs pt-0 pb-0">
               <li class="nav-item">
                 <a class="nav-link active" data-toggle="tab" href="#chat_home_tab">
                   Chat
@@ -106,6 +106,7 @@
       })
 
       $(".nav-tabs").on("click", "a", function(e) {
+        hideIncomingMessageAlert(receiverUserName);
         e.preventDefault();
         if(!$(this).hasClass('open-new-tab')) {
           $(this).tab('show');
@@ -139,25 +140,29 @@
         $(document).on("submit", `#message_container`, function(e) {
           e.preventDefault();
           const message = $(this).find('#messageContent').val();
-          console.log(`sending message from ${currentUser} to ${receiverUserName}`);
-
+          appendMessage(receiverUserName, currentUser, message, false);
           socket.emit('send_private_message', {
             room: receiverUserName,
             from: currentUser,
             message: message
-          })
-          console.log('receiver', receiverUserName)
-          appendMessage(receiverUserName, currentUser, message, false);
-          // $(this).find(`#messages_${receiverUserName}`).append($(`<li> <span class="text-secondary">${currentUser} </span> : ${message}</li>`));
-
+          });
+          socket.emit('notify_user_about_incoming_message', {
+            notification_tab: currentUser,
+            room: receiverUserName
+          });
           $(this).find('#messageContent').val('');
           return false;
         })
-        socket.on('receive_private_message_on_client', function(message) {
-          openNewTab(message.from, false);
-          appendMessage(message.from, message.from, message.message, true)
-          // $(`#messages_${message.from}`).append($(`<li> <span class="text-success">${message.from} </span> : ${message.message}</li>`));
-        })
+      });
+
+      socket.on('receive_private_message_on_client', function(message) {
+        openNewTab(message.from, false);
+        appendMessage(message.from, message.from, message.message, true);
+      });
+
+      socket.on('render_incoming_message_notification', function(data) {
+        $(`#user_list_${data.notification_tab}`).addClass('incoming-message-alert');
+        console.log('message received on client', data);
       });
 
       function appendMessage (messageId, from, message, isReceivedMessage) {
@@ -174,9 +179,11 @@
       }
 
       function openNewTab(receiverUserName, shouldRedirectToTab) {
+        hideIncomingMessageAlert(receiverUserName);
         // the if block will execute when a chat tab is already opened
         // this will take user to the opened tab instead of creating a new chat tab
         if($(`.nav-link#user_${receiverUserName}`).length > 0) {
+          // $(`#incoming_message_alert_${receiverUserName}`).addClass('d-none');
           // on incoming messages just open the tab but dont redirect to the tab
           if(shouldRedirectToTab) {
             const listItem = $(`#user_list_${receiverUserName}`)
@@ -229,6 +236,10 @@
             $('.nav-tabs li:nth-child(' + id + ') a').click();
           }
         }
+      }
+
+      function hideIncomingMessageAlert(receiverUserName) {
+        $(`#user_list_${receiverUserName}`).removeClass('incoming-message-alert');
       }
 
     </script>
