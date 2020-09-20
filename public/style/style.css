@@ -101,3 +101,15 @@ body {
 .text-orange {
   color: #FF7F50;
 }
+
+.incoming-message-alert {
+  color: #fff;
+  display: inline-block;
+  animation: blinkingBackground 2s infinite;
+}
+
+@keyframes blinkingBackground{
+  0% { background-color: #e1ceb1;}
+  50%	{ background-color: #fff;}
+  100% { background-color: #e1ceb1;}
+}
