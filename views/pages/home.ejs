@@ -80,28 +80,44 @@
          </button>
       </div>
     </footer>
+    <script src="/script/ejs-3.1.5/lib/bundle.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io();
       let conversation_id = $('#currentUser').text().trim();
       socket.emit('subscribe', conversation_id);
       socket.emit('new_user', conversation_id);
+      let stringifiedAllUsers = `<%- JSON.stringify(allUsers) %>`;
+      let parsedAllUsers = JSON.parse(stringifiedAllUsers);
       receiverUserName = '';
       var currentUser = $('#currentUser').text().trim();
 
       socket.on('render_new_users', function(data) {
+        let users = [];
         let onlineUsersList = [];
         $('#usersList').empty();
-        let usersExceptLoggedUser = data.filter((user) => user !== conversation_id);
+        parsedAllUsers.map((user) => {
+          if(data.includes(user.username)) {
+            users.unshift({ username: user.username, presence: 'online' })
+          } else {
+            users.push({ username: user.username, presence: 'offline' })
+          }
+        });
+        let usersExceptLoggedUser = users.filter((user) => user.username !== conversation_id);
         $.each(usersExceptLoggedUser, function(index, user) {
+          let presence = user.presence === 'online' ? `<span class='presence online-presence'></span>` : `<span class='presence offline-presence'></span>`;
           onlineUsersList.push(`
             <li class="users-list">
-              <a href="#" class="open-new-tab" id="user_${user}">
-                ${user}
+              <span>
+                ${presence}
+              </span>
+              <a href="#" class="open-new-tab" id="user_${user.username}">
+                ${user.username}
               </a>
             </li>
           `);
         })
+
         $('#usersList').append(onlineUsersList.join(''));
       })
 
