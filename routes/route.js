@@ -1,5 +1,6 @@
 const conn = require('../database');
 const userFunction = require('../functions/user');
+const chatroomFunction = require('../functions/chatroom');
 const { body, validationResult } = require('express-validator');
 let session;
 module.exports = function(app) {
@@ -18,7 +19,9 @@ module.exports = function(app) {
 
   app.get('/home', isLoggedIn, async function(req, res) {
     let allUsers = await userFunction.getAllUsers();
-    res.render('home', { allUsers: allUsers });
+    let chatrooms = await chatroomFunction.getAllChatrooms();
+    console.log(chatrooms)
+    res.render('home', { allUsers: allUsers, chatrooms: chatrooms });
     // req.session.loggedIn ? res.render('home') : res.render('index');
   })
 
