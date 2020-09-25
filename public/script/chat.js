@@ -82,15 +82,24 @@ $(document).ready(function() {
       e.preventDefault();
       const message = $(this).find('#messageContent').val();
       appendMessage(receiverUserName, currentUser, message, false);
-      console.log(chatType, 'ct')
-      socket.emit('send_private_message', {
-        room: receiverUserName,
-        from: currentUser,
-        message: message
-      });
+      if(chatType === 'user') {
+        socket.emit('send_private_message', {
+          room: receiverUserName,
+          from: currentUser,
+          message: message
+        });
+      } else {
+        socket.emit('send_room_message', {
+          room: receiverUserName,
+          from: currentUser,
+          message: message
+        });
+      }
+
       socket.emit('notify_user_about_incoming_message', {
-        notification_tab: currentUser,
-        room: receiverUserName
+        notification_tab: chatType === 'user' ? currentUser : receiverUserName,
+        room: receiverUserName,
+        is_chatroom: chatType === 'room' ? true : false
       });
       $(this).find('#messageContent').val('');
       return false;
@@ -98,17 +107,28 @@ $(document).ready(function() {
   });
 
   socket.on('receive_private_message_on_client', function(message) {
-    openNewTab(message.from, false, chatType);
+    openNewTab(message.from, false, 'user');
     appendMessage(message.from, message.from, message.message, true);
   });
 
-  socket.on('render_incoming_message_notification', function(data) {
-    $(`#${chatType}_list_${data.notification_tab}`).addClass('incoming-message-alert');
-    console.log('message received on client', data);
+  socket.on('receive_room_message_on_client', function(message) {
+    openNewTab(message.room, false, 'room');
+    appendMessage(message.room, message.from, message.message, true);
   });
 
-  function appendMessage (messageId, from, message, isReceivedMessage) {
-    let userNameColor = isReceivedMessage ? 'text-success' : 'text-secondary';
+  socket.on('render_incoming_message_notification', function(data) {
+    let type = data.is_chatroom ? 'room' : 'user' 
+    $(`#${type}_list_${data.notification_tab}`).addClass('incoming-message-alert');
+  });
+
+  socket.on('chatroom_participants', function(data) {
+    let fullMessage = 'Currently in the chatroom: ' +data.participants.join(', ') + '.';
+    appendMessage(data.room, data.from, fullMessage, true, true);
+  });
+
+  function appendMessage (messageId, from, message, isReceivedMessage, isBotResponse) {
+    let color = isReceivedMessage ? 'text-success' : 'text-secondary';
+    let userNameColor = isBotResponse ? 'text-orange' : color;
     $(`#messages_${messageId}`).append($(`
       <li> 
         <span class="${userNameColor}">
@@ -136,6 +156,10 @@ $(document).ready(function() {
     } else {
       if(chatType === 'room') {
         socket.emit('join_chatroom', receiverUserName);
+        socket.on('user_has_entered', function(data) {
+          let fullMessage = `${data.username} has entered.`;
+          appendMessage(data.room, data.from, fullMessage, true, true);
+        });
       }
       var id = $(".nav-tabs").children().length;
       id++;

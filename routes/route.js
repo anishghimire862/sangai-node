@@ -20,7 +20,6 @@ module.exports = function(app) {
   app.get('/home', isLoggedIn, async function(req, res) {
     let allUsers = await userFunction.getAllUsers();
     let chatrooms = await chatroomFunction.getAllChatrooms();
-    console.log(chatrooms)
     res.render('home', { allUsers: allUsers, chatrooms: chatrooms });
     // req.session.loggedIn ? res.render('home') : res.render('index');
   })
