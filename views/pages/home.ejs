@@ -34,6 +34,9 @@
                 Users
                 <ul id="usersList" class="list-unstyled">
                 </ul>
+                Chatrooms
+                <ul id="chatroomsList" class="list-unstyled">
+                </ul>
               </div>
             </div>
           </div>
@@ -81,183 +84,20 @@
       </div>
     </footer>
     <script src="/script/ejs-3.1.5/lib/bundle.js"></script>
+    <script src="/script/chat.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io();
       let conversation_id = $('#currentUser').text().trim();
-      socket.emit('subscribe', conversation_id);
+      socket.emit('subscribe', 'private_' +conversation_id);
       socket.emit('new_user', conversation_id);
       let stringifiedAllUsers = `<%- JSON.stringify(allUsers) %>`;
       let parsedAllUsers = JSON.parse(stringifiedAllUsers);
+      let stringifiedAllChatrooms = `<%- JSON.stringify(chatrooms) %>`;
+      parsedAllChatrooms = JSON.parse(stringifiedAllChatrooms);
       receiverUserName = '';
+      chatType = 'user';
       var currentUser = $('#currentUser').text().trim();
-
-      socket.on('render_new_users', function(data) {
-        let users = [];
-        let onlineUsersList = [];
-        $('#usersList').empty();
-        parsedAllUsers.map((user) => {
-          if(data.includes(user.username)) {
-            users.unshift({ username: user.username, presence: 'online' })
-          } else {
-            users.push({ username: user.username, presence: 'offline' })
-          }
-        });
-        let usersExceptLoggedUser = users.filter((user) => user.username !== conversation_id);
-        $.each(usersExceptLoggedUser, function(index, user) {
-          let presence = user.presence === 'online' ? `<span class='presence online-presence'></span>` : `<span class='presence offline-presence'></span>`;
-          onlineUsersList.push(`
-            <li class="users-list">
-              <span>
-                ${presence}
-              </span>
-              <a href="#" class="open-new-tab" id="user_${user.username}">
-                ${user.username}
-              </a>
-            </li>
-          `);
-        })
-
-        $('#usersList').append(onlineUsersList.join(''));
-      })
-
-      $(".nav-tabs").on("click", "a", function(e) {
-        hideIncomingMessageAlert(receiverUserName);
-        e.preventDefault();
-        if(!$(this).hasClass('open-new-tab')) {
-          $(this).tab('show');
-        }
-      })
-      .on("click", "span", function() {
-        var anchor = $(this).siblings('a');
-        $(anchor.attr('href')).remove();
-        $(this).parent().remove();
-        $(".nav-tabs li").children('a').first().click();
-      });
-
-      // set receiver userName in the global scope
-
-      $(document).on('click', '.open-new-tab', function(e) {
-        receiverUserName = $(this).attr('id').substr(5);
-      });
-
-      $(document).on('click', '.update-user-name', function(e) {
-        receiverUserName = $(this).attr('id').substr(5);
-      });
-      
-
-      $(document).on('click', '.open-new-tab', function(e){
-        e.preventDefault();
-        openNewTab(receiverUserName, true);
-      })
-
-      // chat 
-      $(function () {
-        $(document).on("submit", `#message_container`, function(e) {
-          e.preventDefault();
-          const message = $(this).find('#messageContent').val();
-          appendMessage(receiverUserName, currentUser, message, false);
-          socket.emit('send_private_message', {
-            room: receiverUserName,
-            from: currentUser,
-            message: message
-          });
-          socket.emit('notify_user_about_incoming_message', {
-            notification_tab: currentUser,
-            room: receiverUserName
-          });
-          $(this).find('#messageContent').val('');
-          return false;
-        })
-      });
-
-      socket.on('receive_private_message_on_client', function(message) {
-        openNewTab(message.from, false);
-        appendMessage(message.from, message.from, message.message, true);
-      });
-
-      socket.on('render_incoming_message_notification', function(data) {
-        $(`#user_list_${data.notification_tab}`).addClass('incoming-message-alert');
-        console.log('message received on client', data);
-      });
-
-      function appendMessage (messageId, from, message, isReceivedMessage) {
-        let userNameColor = isReceivedMessage ? 'text-success' : 'text-secondary';
-        $(`#messages_${messageId}`).append($(`
-          <li> 
-            <span class="${userNameColor}">
-              ${from}
-            </span>
-            :
-            ${message}
-          </li>
-        `));
-      }
-
-      function openNewTab(receiverUserName, shouldRedirectToTab) {
-        hideIncomingMessageAlert(receiverUserName);
-        // the if block will execute when a chat tab is already opened
-        // this will take user to the opened tab instead of creating a new chat tab
-        if($(`.nav-link#user_${receiverUserName}`).length > 0) {
-          // $(`#incoming_message_alert_${receiverUserName}`).addClass('d-none');
-          // on incoming messages just open the tab but dont redirect to the tab
-          if(shouldRedirectToTab) {
-            const listItem = $(`#user_list_${receiverUserName}`)
-            const tabIndex = $('li').index(listItem);
-            $(`.nav-tabs li:nth-child(${tabIndex + 1}) a`).click();
-          } else {
-            return false;
-          }
-        } else {
-          var id = $(".nav-tabs").children().length;
-          id++;
-          var tabId = 'tab_' + id;
-          const chatBox = `
-            <div class="container position-fixed" style="width: 100%; left: 0; right: 0;" id="message_container">
-              <div class="card bg-color" style="width: 100%; height: 65vh;">
-                <div class="card-header">
-                  ${receiverUserName}
-                </div>
-                <div class="card-body overflow-auto" style="width: 100%; height: 65vw;">
-                  <ul id="messages_${receiverUserName}" class="list-unstyled">
-                    <li> 
-                      <span class="text-orange">sangai</span>: Hi!! it feels like home to me.
-                    </li>
-                  </ul>
-                </div>
-                <div class="card-footer text-muted p-1">
-                  <form action="#" id="messageForm_${receiverUserName}">
-                    <div class="input-group">
-                      <input type="hidden" value="${receiverUserName}" id="receiverUserName" />
-                      <textarea class="form-control" id="messageContent" rows="1" placeholder="Type your message here..." required style="resize:none"></textarea>
-                      <button class="btn btn-primary input-group-addon ml-1" id="sendMessageButton">Send</button>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          `;
-          $(".nav-tabs").append(`
-            <li class="nav-item" id="user_list_${receiverUserName}">
-              <a class="nav-link update-user-name" data-toggle="tab" href="#tab_user_${receiverUserName}" id="user_${receiverUserName}"> 
-                ${receiverUserName} 
-              </a>
-              <span>
-                x
-              </span> 
-            </li>
-          `);
-          $('.tab-content').append(`<div class="tab-pane fade ${receiverUserName}" id="tab_user_${receiverUserName}"> ${chatBox} </div>`);
-          if(shouldRedirectToTab) {
-            $('.nav-tabs li:nth-child(' + id + ') a').click();
-          }
-        }
-      }
-
-      function hideIncomingMessageAlert(receiverUserName) {
-        $(`#user_list_${receiverUserName}`).removeClass('incoming-message-alert');
-      }
-
     </script>
     <%- include('../partials/common/footer') %>
   </body>

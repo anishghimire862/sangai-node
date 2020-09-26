@@ -21,7 +21,7 @@ module.exports =  {
   getAllUsers (req, res) {
     return new Promise((resolve, reject) => {
       conn.query('SELECT * FROM users', (error, result, fields) => {
-        if(error) reject(err);
+        if(error) reject(error);
         resolve(result)
       })
     })
