@@ -89,7 +89,7 @@
     <script>
       const socket = io();
       let conversation_id = $('#currentUser').text().trim();
-      socket.emit('subscribe', conversation_id);
+      socket.emit('subscribe', 'private_' +conversation_id);
       socket.emit('new_user', conversation_id);
       let stringifiedAllUsers = `<%- JSON.stringify(allUsers) %>`;
       let parsedAllUsers = JSON.parse(stringifiedAllUsers);

@@ -81,24 +81,25 @@ $(document).ready(function() {
     $(document).on("submit", `#message_container`, function(e) {
       e.preventDefault();
       const message = $(this).find('#messageContent').val();
-      appendMessage(receiverUserName, currentUser, message, false);
       if(chatType === 'user') {
         socket.emit('send_private_message', {
-          room: receiverUserName,
+          room: 'private_' +receiverUserName,
           from: currentUser,
           message: message
         });
+        appendMessage(receiverUserName, currentUser, message, false, false, 'user');
       } else {
         socket.emit('send_room_message', {
           room: receiverUserName,
           from: currentUser,
           message: message
         });
+        appendMessage(receiverUserName, currentUser, message, false, false, 'room');
       }
 
       socket.emit('notify_user_about_incoming_message', {
         notification_tab: chatType === 'user' ? currentUser : receiverUserName,
-        room: receiverUserName,
+        room: chatType === 'user' ? 'private_' +receiverUserName : receiverUserName,
         is_chatroom: chatType === 'room' ? true : false
       });
       $(this).find('#messageContent').val('');
@@ -108,12 +109,12 @@ $(document).ready(function() {
 
   socket.on('receive_private_message_on_client', function(message) {
     openNewTab(message.from, false, 'user');
-    appendMessage(message.from, message.from, message.message, true);
+    appendMessage(message.from, message.from, message.message, true, false, 'user');
   });
 
   socket.on('receive_room_message_on_client', function(message) {
     openNewTab(message.room, false, 'room');
-    appendMessage(message.room, message.from, message.message, true);
+    appendMessage(message.room, message.from, message.message, true, false, 'room');
   });
 
   socket.on('render_incoming_message_notification', function(data) {
@@ -123,19 +124,20 @@ $(document).ready(function() {
 
   socket.on('chatroom_participants', function(data) {
     let fullMessage = 'Currently in the chatroom: ' +data.participants.join(', ') + '.';
-    appendMessage(data.room, data.from, fullMessage, true, true);
+    appendMessage(data.room, data.from, fullMessage, true, true, 'room');
   });
 
   socket.on('user_has_entered', function(data) {
     let fullMessage = `${data.username} has entered.`;
-    appendMessage(data.room, data.from, fullMessage, true, true);
+    appendMessage(data.room, data.from, fullMessage, true, true, 'room');
   });
 
-  function appendMessage (messageId, from, message, isReceivedMessage, isInformation) {
+  function appendMessage (messageId, from, message, isReceivedMessage, isInformation, chatType) {
     let color = isReceivedMessage ? 'blue-text' : 'green-text';
     let userNameColor = isInformation ? 'text-orange' : color;
     let textFont = isInformation ? 'font-italic' : 'font-weight-light'
-    $(`#messages_${messageId}`).append($(`
+    console.log(chatType)
+    $(`#messages_${chatType}_${messageId}`).append($(`
       <li> 
         <span class="${userNameColor}">
           ${from}
@@ -175,7 +177,7 @@ $(document).ready(function() {
               ${receiverUserName}
             </div>
             <div class="card-body overflow-auto" style="width: 100%; height: 65vw;">
-              <ul id="messages_${receiverUserName}" class="list-unstyled">
+              <ul id="messages_${chatType}_${receiverUserName}" class="list-unstyled">
                 <li>
                 </li>
               </ul>
