@@ -126,16 +126,24 @@ $(document).ready(function() {
     appendMessage(data.room, data.from, fullMessage, true, true);
   });
 
-  function appendMessage (messageId, from, message, isReceivedMessage, isBotResponse) {
-    let color = isReceivedMessage ? 'text-success' : 'text-secondary';
-    let userNameColor = isBotResponse ? 'text-orange' : color;
+  socket.on('user_has_entered', function(data) {
+    let fullMessage = `${data.username} has entered.`;
+    appendMessage(data.room, data.from, fullMessage, true, true);
+  });
+
+  function appendMessage (messageId, from, message, isReceivedMessage, isInformation) {
+    let color = isReceivedMessage ? 'blue-text' : 'green-text';
+    let userNameColor = isInformation ? 'text-orange' : color;
+    let textFont = isInformation ? 'font-italic' : 'font-weight-light'
     $(`#messages_${messageId}`).append($(`
       <li> 
         <span class="${userNameColor}">
           ${from}
         </span>
         :
-        ${message}
+        <span class="${textFont}">
+          ${message}
+        </span>
       </li>
     `));
   }
@@ -156,24 +164,19 @@ $(document).ready(function() {
     } else {
       if(chatType === 'room') {
         socket.emit('join_chatroom', receiverUserName);
-        socket.on('user_has_entered', function(data) {
-          let fullMessage = `${data.username} has entered.`;
-          appendMessage(data.room, data.from, fullMessage, true, true);
-        });
       }
       var id = $(".nav-tabs").children().length;
       id++;
       var tabId = 'tab_' + id;
       const chatBox = `
         <div class="container position-fixed" style="width: 100%; left: 0; right: 0;" id="message_container">
-          <div class="card bg-color" style="width: 100%; height: 65vh;">
+          <div class="card bg-color" style="width: 100%; height: 70vh;">
             <div class="card-header">
               ${receiverUserName}
             </div>
             <div class="card-body overflow-auto" style="width: 100%; height: 65vw;">
               <ul id="messages_${receiverUserName}" class="list-unstyled">
-                <li> 
-                  <span class="text-orange">sangai</span>: Hi!! it feels like home to me.
+                <li>
                 </li>
               </ul>
             </div>
