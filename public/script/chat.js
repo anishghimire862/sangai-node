@@ -136,7 +136,6 @@ $(document).ready(function() {
     let color = isReceivedMessage ? 'blue-text' : 'green-text';
     let userNameColor = isInformation ? 'text-orange' : color;
     let textFont = isInformation ? 'font-italic' : 'font-weight-light'
-    console.log(chatType)
     $(`#messages_${chatType}_${messageId}`).append($(`
       <li> 
         <span class="${userNameColor}">
