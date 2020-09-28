@@ -59,6 +59,16 @@ $(document).ready(function() {
     $(".nav-tabs li").children('a').first().click();
   });
 
+  $(document).on('click', '.exit-chat', function() {
+    let receiver = $(this).attr('id').substr(11);
+    let type = 'room';
+    let anchor = $('.nav-tabs').find(`#${type}_${receiver}`);
+    $(anchor.attr('href')).remove();
+    let tab = $('.nav-tabs').find(`#${type}_list_${receiver}`);
+    $(tab).remove();
+    $(".nav-tabs li").children('a').first().click();
+  })
+
   // set receiver userName in the global scope
 
   $(document).on('click', '.open-new-tab', function(e) {
@@ -70,7 +80,6 @@ $(document).ready(function() {
     receiverUserName = $(this).attr('id').substr(5);
     chatType = $(this).attr('id').substr(0,4);
   });
-  
 
   $(document).on('click', '.open-new-tab', function(e){
     e.preventDefault();
@@ -168,12 +177,20 @@ $(document).ready(function() {
       }
       var id = $(".nav-tabs").children().length;
       id++;
-      var tabId = 'tab_' + id;
       const chatBox = `
         <div class="container position-fixed" style="width: 100%; left: 0; right: 0;" id="message_container">
           <div class="card bg-color" style="width: 100%; height: 70vh;">
-            <div class="card-header">
-              ${receiverUserName}
+            <div class="card-header d-inline-block p-1">
+              <div class="d-inline-block pl-1 pt-1">
+                ${receiverUserName}
+              </div>
+              <div class="dropdown float-right d-inline-block">
+                <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Menu
+                </button>
+                <div class="dropdown-menu" id="chat_menu_${chatType}_${receiverUserName}" aria-labelledby="dropdownMenu2">
+                </div>
+              </div>
             </div>
             <div class="card-body overflow-auto" style="width: 100%; height: 65vw;">
               <ul id="messages_${chatType}_${receiverUserName}" class="list-unstyled">
@@ -186,7 +203,7 @@ $(document).ready(function() {
                 <div class="input-group">
                   <input type="hidden" value="${receiverUserName}" id="receiverUserName" />
                   <textarea class="form-control" id="messageContent" rows="1" placeholder="Type your message here..." required style="resize:none"></textarea>
-                  <button class="btn btn-primary input-group-addon ml-1" id="sendMessageButton">Send</button>
+                  <button class="btn btn-sm btn-outline-primary input-group-addon ml-1" id="sendMessageButton">Send</button>
                 </div>
               </form>
             </div>
@@ -200,13 +217,29 @@ $(document).ready(function() {
           </a>
           <span>
             x
-          </span> 
+          </span>
         </li>
       `);
       $('.tab-content').append(`<div class="tab-pane fade ${receiverUserName}" id="tab_${chatType}_${receiverUserName}"> ${chatBox} </div>`);
       if(shouldRedirectToTab) {
         $('.nav-tabs li:nth-child(' + id + ') a').click();
       }
+      addChatMenu(receiverUserName, chatType);
+    }
+  }
+
+  function addChatMenu(receiverUserName, chatType) {
+    let leaveChatText = chatType === 'user' ? 'Leave chat' : 'Leave chatroom'
+    if(chatType === 'room') {
+      $(`#chat_menu_${chatType}_${receiverUserName}`).append($(`
+      <button 
+        class="btn-sm btn-outline-primary dropdown-item exit-chat" 
+        type="button"
+        id="leave_menu_${receiverUserName}"
+      >
+        ${leaveChatText}
+      </button>
+    `));
     }
   }
 
