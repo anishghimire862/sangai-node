@@ -131,7 +131,7 @@ $(document).ready(function() {
   });
 
   socket.on('render_incoming_message_notification', function(data) {
-    let type = data.is_chatroom ? 'room' : 'user' 
+    let type = data.is_chatroom ? 'room' : 'user'
     $(`#${type}_list_${data.notification_tab}`).addClass('incoming-message-alert');
   });
 
@@ -143,11 +143,13 @@ $(document).ready(function() {
   socket.on('user_has_entered', function(data) {
     let fullMessage = `${data.username} has entered.`;
     appendMessage(data.room, data.from, fullMessage, true, true, 'room');
+    $(`#room_list_${data.room}`).addClass('incoming-message-alert');
   });
 
   socket.on('user_has_left', function(data) {
     let fullMessage = `${data.username} has left.`;
     appendMessage(data.room, data.from, fullMessage, true, true, 'room');
+    $(`#room_list_${data.room}`).addClass('incoming-message-alert');
   });
 
   function appendMessage (messageId, from, message, isReceivedMessage, isInformation, chatType) {
