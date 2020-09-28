@@ -67,6 +67,10 @@ $(document).ready(function() {
     let tab = $('.nav-tabs').find(`#${type}_list_${receiver}`);
     $(tab).remove();
     $(".nav-tabs li").children('a').first().click();
+    socket.emit('leave_room', {
+      room: receiver,
+      username: currentUser
+    });
   })
 
   // set receiver userName in the global scope
@@ -138,6 +142,11 @@ $(document).ready(function() {
 
   socket.on('user_has_entered', function(data) {
     let fullMessage = `${data.username} has entered.`;
+    appendMessage(data.room, data.from, fullMessage, true, true, 'room');
+  });
+
+  socket.on('user_has_left', function(data) {
+    let fullMessage = `${data.username} has left.`;
     appendMessage(data.room, data.from, fullMessage, true, true, 'room');
   });
 
@@ -238,6 +247,16 @@ $(document).ready(function() {
         id="leave_menu_${receiverUserName}"
       >
         ${leaveChatText}
+      </button>
+    `));
+    } else {
+      $(`#chat_menu_${chatType}_${receiverUserName}`).append($(`
+      <button 
+        class="btn-sm btn-outline-primary dropdown-item" 
+        type="button"
+        id="view_profile_${receiverUserName}"
+      >
+        View Profile
       </button>
     `));
     }
