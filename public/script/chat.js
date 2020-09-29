@@ -188,6 +188,9 @@ $(document).ready(function() {
       }
       var id = $(".nav-tabs").children().length;
       id++;
+
+      let closeTab = chatType === 'user' ? '<span> x </span>' : '';
+
       const chatBox = `
         <div class="container position-fixed" style="width: 100%; left: 0; right: 0;" id="message_container">
           <div class="card bg-color" style="width: 100%; height: 70vh;">
@@ -226,9 +229,7 @@ $(document).ready(function() {
           <a class="nav-link update-user-name" data-toggle="tab" href="#tab_${chatType}_${receiverUserName}" id="${chatType}_${receiverUserName}"> 
             ${receiverUserName} 
           </a>
-          <span>
-            x
-          </span>
+            ${closeTab}
         </li>
       `);
       $('.tab-content').append(`<div class="tab-pane fade ${receiverUserName}" id="tab_${chatType}_${receiverUserName}"> ${chatBox} </div>`);
