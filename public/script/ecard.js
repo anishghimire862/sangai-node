@@ -1,3 +1,6 @@
+var element = $('#ecardBackground');
+var getCanvas;
+var receiver;
 
 $('.colors').click(function() {
 	var chosen_color = $(this).css('background-color');
@@ -14,7 +17,8 @@ $('#ecardMessage').click(function() {
 });
 
 $('#recipient').keyup(function() {
-	var recipient = $(this).val();
+  var recipient = $(this).val();
+  receiver = $(this).val();
 	$('#recipientOutput').html(recipient);
 });
 
@@ -30,8 +34,8 @@ $('#ecardControls').on('click', '.stickers', function () {
   new_sticker.addClass('stickers_on_card');
   $('#canvas').prepend(new_sticker);
   new_sticker.draggable({
-      containment: '#canvas',
-      opacity: .35
+    containment: '#canvas',
+    opacity: .35
   });
 });
 
@@ -41,4 +45,27 @@ $('#refreshEcardButton').click(function() {
   $('#canvas').css('background-color', '');
   $('#canvas').css('background-image', '');
   $('#canvas img').remove();
+});
+
+$('#submitEcardButton').click(function() {
+  html2canvas(element, {
+    onrendered: function (canvas) {
+      canvas.toBlob(function(blob) {
+        const formData = new FormData();
+        formData.append('ecard', blob);
+        formData.append('receiver', receiver);
+        formData.append('message', 'Hello!! this is custom message along with ecard');
+        $.ajax({
+          url: '/ecard',
+          type: 'post',
+          data: formData,
+          contentType: false,
+          processData: false,
+          success: function(response) {
+            alert('Successfully uploaded.')
+          }
+        })
+      })
+    }
+  })
 })
