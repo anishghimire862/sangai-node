@@ -2,7 +2,11 @@ const conn = require('../database');
 const userFunction = require('../functions/user');
 const chatroomFunction = require('../functions/chatroom');
 const { body, validationResult } = require('express-validator');
+const multer = require('multer');
 let session;
+
+const multerStorage = require('../multer');
+const upload = multer({storage: multerStorage.storage})
 module.exports = function(app) {
   app.get('/', function(req, res) {
     req.session.loggedIn ? res.redirect('/home') : res.render('index');
@@ -101,6 +105,31 @@ module.exports = function(app) {
       res.redirect('/');
     })
   });
+
+  app.post('/ecard', upload.single('ecard'), (req, res, next) => {
+    const file = req.file;
+    if(!file) {
+      console.log('No file selected');
+    } else {
+      let fs = require('fs');
+      fs.readFile('./data/ecards.json', 'utf-8', function(err, data) {
+        if(err)
+          console.log(err)
+        let arrayOfObjects = JSON.parse(data);
+        arrayOfObjects.ecards.push({
+          image: file.filename,
+          sender: req.session.loggedInUser.username,
+          receiver: req.body.receiver,
+          message: req.body.message
+        });
+        fs.writeFile('./data/ecards.json', JSON.stringify(arrayOfObjects), 'utf-8', function(err) {
+          if(err)
+            console.log(err)
+            res.json({status: 'success', path: file.path, filename: file.filename})  
+        })
+      })
+    }
+  })
 
   function isLoggedIn(req, res, next) {
     if(req.session.loggedIn) {
