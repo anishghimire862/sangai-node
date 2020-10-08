@@ -57,6 +57,11 @@ $('#submitEcardButton').click(function() {
         formData.append('message', 'Hello!! this is custom message along with ecard');
         $.ajax({
           url: '/ecard',
+          xhrFields: {
+            withCredentials: true
+          },
+          dataType: 'json',
+          crossDomain: true,
           type: 'post',
           data: formData,
           contentType: false,
