@@ -6,6 +6,7 @@ const multer = require('multer');
 let session;
 
 const multerStorage = require('../multer');
+const { send } = require('process');
 const upload = multer({storage: multerStorage.storage})
 module.exports = function(app) {
   app.get('/', function(req, res) {
@@ -108,6 +109,9 @@ module.exports = function(app) {
 
   app.post('/ecard', upload.single('ecard'), (req, res, next) => {
     const file = req.file;
+    const sender = req.session.loggedInUser.username;
+    console.log('this is session ', req.session.loggedInUser)
+    const receiver = req.body.receiver
     if(!file) {
       console.log('No file selected');
     } else {
@@ -118,14 +122,26 @@ module.exports = function(app) {
         let arrayOfObjects = JSON.parse(data);
         arrayOfObjects.ecards.push({
           image: file.filename,
-          sender: req.session.loggedInUser.username,
-          receiver: req.body.receiver,
+          sender: sender,
+          receiver: receiver,
           message: req.body.message
         });
         fs.writeFile('./data/ecards.json', JSON.stringify(arrayOfObjects), 'utf-8', function(err) {
           if(err)
-            console.log(err)
-            res.json({status: 'success', path: file.path, filename: file.filename})  
+            console.log(err);
+            const notification = {
+              sender: sender,
+              receiver: receiver,
+              type: 'ecard',
+              content: file.filename
+            }
+            conn.query('INSERT INTO notifications SET ?', notification, function(err, data) {
+              if(err)
+                console.log(err)
+              else 
+                console.log('notify')
+            })
+            res.json({status: 'success', path: file.path, filename: file.filename});
         })
       })
     }
