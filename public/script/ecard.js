@@ -39,7 +39,8 @@ $('#ecardControls').on('click', '.stickers', function () {
   });
 });
 
-$('#refreshEcardButton').click(function() {
+$('#refreshEcardButton').click(function(e) {
+  e.preventDefault();
   $('#messageOutput').text('');
   $('#recipientOutput').text('');
   $('#canvas').css('background-color', '');
@@ -47,7 +48,12 @@ $('#refreshEcardButton').click(function() {
   $('#canvas img').remove();
 });
 
-$('#submitEcardButton').click(function() {
+function aaa () {
+  alert()
+}
+
+$('#submitEcardButton').click(function(event) {
+  event.preventDefault();
   html2canvas(element, {
     onrendered: function (canvas) {
       canvas.toBlob(function(blob) {
@@ -56,18 +62,24 @@ $('#submitEcardButton').click(function() {
         formData.append('receiver', receiver);
         formData.append('message', 'Hello!! this is custom message along with ecard');
         $.ajax({
-          url: '/ecard',
+          type: 'POST',
           xhrFields: {
             withCredentials: true
           },
-          dataType: 'json',
+          url: '/ecard',
+          credentials: 'same-origin', 
           crossDomain: true,
-          type: 'post',
           data: formData,
           contentType: false,
           processData: false,
           success: function(response) {
-            alert('Successfully uploaded.')
+            socket.emit('send_notification', {
+              to: 'private_' +response.receiver,
+              from: response.sender,
+              type: 'ecard',
+              message: 'You have received an ecard.'
+            });
+            alert('Successfully sent ecard.');
           }
         })
       })
