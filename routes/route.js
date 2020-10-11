@@ -6,8 +6,11 @@ const multer = require('multer');
 let session;
 
 const multerStorage = require('../multer');
-const { send } = require('process');
 const upload = multer({storage: multerStorage.storage})
+
+const notificationsApi = require('../api/notifications');
+const ecardApi = require('../api/ecard');
+
 module.exports = function(app) {
   app.get('/', function(req, res) {
     req.session.loggedIn ? res.redirect('/home') : res.render('index');
@@ -26,7 +29,6 @@ module.exports = function(app) {
     let allUsers = await userFunction.getAllUsers();
     let chatrooms = await chatroomFunction.getAllChatrooms();
     res.render('home', { allUsers: allUsers, chatrooms: chatrooms });
-    // req.session.loggedIn ? res.render('home') : res.render('index');
   })
 
   app.post('/register', [
@@ -108,43 +110,11 @@ module.exports = function(app) {
   });
 
   app.post('/ecard', upload.single('ecard'), (req, res, next) => {
-    const file = req.file;
-    const sender = req.session.loggedInUser.username;
-    console.log('this is session ', req.session.loggedInUser)
-    const receiver = req.body.receiver
-    if(!file) {
-      console.log('No file selected');
-    } else {
-      let fs = require('fs');
-      fs.readFile('./data/ecards.json', 'utf-8', function(err, data) {
-        if(err)
-          console.log(err)
-        let arrayOfObjects = JSON.parse(data);
-        arrayOfObjects.ecards.push({
-          image: file.filename,
-          sender: sender,
-          receiver: receiver,
-          message: req.body.message
-        });
-        fs.writeFile('./data/ecards.json', JSON.stringify(arrayOfObjects), 'utf-8', function(err) {
-          if(err)
-            console.log(err);
-            const notification = {
-              sender: sender,
-              receiver: receiver,
-              type: 'ecard',
-              content: file.filename
-            }
-            conn.query('INSERT INTO notifications SET ?', notification, function(err, data) {
-              if(err)
-                console.log(err)
-              else 
-                console.log('notify')
-            })
-            res.json({status: 'success', path: file.path, filename: file.filename});
-        })
-      })
-    }
+    ecardApi.postEcard(req, res, next);
+  })
+
+  app.get('/notifications', (req,res) => {
+    notificationsApi.getNotifications(req, res);
   })
 
   function isLoggedIn(req, res, next) {

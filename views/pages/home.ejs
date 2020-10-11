@@ -9,31 +9,22 @@
       <div class="navbar-header pull-right" style="display: inline-block;">
         <% if(loggedInUser) { %>
 
-          <div class="dropdown dropdown" style="display: inline-block">
+          <div class="dropdown dropdown" style="display: inline-block ">
             <a class="nav-link p-1" href="#" id="notification" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class="material-icons text-white" style="font-size: 20px;">notifications</i>
+              <i 
+                class="material-icons" 
+                id="notification_icon" 
+                style="font-size: 20px; color: white;"
+              >
+                notifications
+              </i>
+              <span class="presence notification-dot" id="notification_dot"></span>
             </a>
             <div 
-              class="dropdown-menu dropdown-menu-right" 
+              class="dropdown-menu dropdown-menu-right scrollable-menu" 
               aria-labelledby="notification"
+              id="notifications"
             >
-              <a class="dropdown-item" href="#"> 
-                This is very first notification.
-                This is very first notification. 
-                This is very first notification.
-              </a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#"> 
-                This is very second notification.
-              </a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#"> 
-                This is very first notification.
-              </a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="#"> 
-                This is very second notification.
-              </a>
             </div>
           </div>
 
@@ -51,12 +42,6 @@
             </div>
           </div>
         <% } %>
-        <!-- <% if(loggedInUser) { %>
-          <span class="text-white" id="currentUser">
-            <i class="material-icons">person</i>
-            <%- loggedInUser.username %>
-          </span>
-        <% } %> -->
       </div>
     </nav>    
     <div class="container-fluid">
@@ -133,6 +118,7 @@
     </footer>
     <script src="/script/ejs-3.1.5/lib/bundle.js"></script>
     <script src="/script/chat.js"></script>
+    <script src="/script/notification.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io();

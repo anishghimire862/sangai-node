@@ -152,3 +152,17 @@ small {
 .blue-text {
   color: blue;
 }
+
+.scrollable-menu {
+  height: auto;
+  max-height: 450px;
+  overflow-x: hidden;
+}
+
+.notification-dot {
+  position: absolute;
+  right: -10;
+  top: -10;
+  width: 5px;
+  height: 5px;
+}

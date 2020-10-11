@@ -1,7 +1,7 @@
 <div>
   <div class="row">
     <div class="col-12 col-sm-6" id="ecardControls">
-      <form action="#">
+      <form>
         <h2> Pick a color </h2>
         <div class="form-inline">
           <div class='colors' id='blue'></div>
@@ -38,11 +38,11 @@
           <img class='stickers' src='/images/stickers/sticker-yellow-gift.png' alt='Yellow gift sticker'>
           <img class='stickers' src='/images/stickers/sticker-star.png' alt='Star sticker'>    
         </div>
+        <div class="text-right">
+          <button type="button" class="btn btn-outline-primary" id="refreshEcardButton">Start Over</button>
+          <button type="button" class="btn btn-outline-primary" id="submitEcardButton">Send</button>
+        </div>
       </form>
-      <div class="text-right">
-        <button type="submit" class="btn btn-outline-primary" id="refreshEcardButton">Start Over</button>
-        <button type="submit" class="btn btn-outline-primary" id="submitEcardButton">Send</button>
-      </div>
     </div>
     <div class="col-12 col-sm-6 d-flex justify-content-center mt-4">
       <div id="ecardBackground">

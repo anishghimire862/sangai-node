@@ -11,6 +11,39 @@ function loadHomePage () {
   pageIdList.forEach(function(page){
     document.getElementById(page).addEventListener("click", changePage, false);
   });
+  $.ajax({
+    type: 'GET',
+    xhrFields: {
+      withCredentials: true
+    },
+    url: '/notifications',
+    credentials: 'same-origin', 
+    crossDomain: true,
+    contentType: false,
+    processData: false,
+    success: function(response) {
+      let notifications = response.data;
+      let allNotifications = [];
+      $.each(notifications, function(index, notification) {
+        if(notification.type === 'ecard') {
+          allNotifications.push(`
+            <div class="dropdown-item">
+              <div>
+                ${notification.sender} has sent you an ecard
+              </div>
+              <img 
+                class="img-fluid"
+                style="width: 200px; height: 180px;"
+                src="http://localhost:3000/images/ecards/${notification.content}"
+              >
+            </div>
+            <div class="dropdown-divider"></div>
+          `); 
+        }
+      })
+      $('#notifications').append(allNotifications.join(''));
+    }
+  })
 }
 
 function changePage() {
