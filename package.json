@@ -4,6 +4,12 @@
   "main": "index.js",
   "author": "Anish Ghimire",
   "license": "MIT",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "nodemonConfig": {
+    "ignore": ["data/*"]
+  },
   "dependencies": {
     "bcrypt": "^5.0.0",
     "bcryptjs": "^2.4.3",
