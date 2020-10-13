@@ -10,6 +10,7 @@ const upload = multer({storage: multerStorage.storage})
 
 const notificationsApi = require('../api/notifications');
 const ecardApi = require('../api/ecard');
+const userApi = require('../api/user');
 
 module.exports = function(app) {
   app.get('/', function(req, res) {
@@ -115,6 +116,10 @@ module.exports = function(app) {
 
   app.get('/notifications', (req,res) => {
     notificationsApi.getNotifications(req, res);
+  })
+
+  app.get('/valid_users/:username', (req,res) => {
+    userApi.isValidUser(req, res)
   })
 
   function isLoggedIn(req, res, next) {

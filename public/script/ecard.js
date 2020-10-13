@@ -19,8 +19,34 @@ $('#ecardMessage').click(function() {
 $('#recipient').keyup(function() {
   var recipient = $(this).val();
   receiver = $(this).val();
-	$('#recipientOutput').html(recipient);
+  $('#recipientOutput').html(recipient);
 });
+
+$('#recipient').blur(function() {
+  $.ajax({
+    type: 'GET',
+    xhrFields: {
+      withCredentials: true
+    },
+    url: `/valid_users/${receiver}`,
+    data: {
+      username: receiver
+    },
+    credentials: 'same-origin', 
+    crossDomain: true,
+    contentType: false,
+    processData: false,
+    success: function(response) {
+      if(response.isValidUser === false) {
+        $('#invalid_username').show();
+        $('#submitEcardButton').attr('disabled', true)
+      } else {
+        $('#invalid_username').hide();
+        $('#submitEcardButton').attr('disabled', false)
+      }
+    }
+  })
+})
 
 $('.stickers').click(function() {
   var new_sticker = $(this).clone();
@@ -41,16 +67,8 @@ $('#ecardControls').on('click', '.stickers', function () {
 
 $('#refreshEcardButton').click(function(e) {
   e.preventDefault();
-  $('#messageOutput').text('');
-  $('#recipientOutput').text('');
-  $('#canvas').css('background-color', '');
-  $('#canvas').css('background-image', '');
-  $('#canvas img').remove();
+  clearEcard();
 });
-
-function aaa () {
-  alert()
-}
 
 $('#submitEcardButton').click(function(event) {
   event.preventDefault();
@@ -79,6 +97,7 @@ $('#submitEcardButton').click(function(event) {
               type: 'ecard',
               message: 'You have received an ecard.'
             });
+            clearEcard();
             alert('Successfully sent ecard.');
           }
         })
@@ -86,3 +105,12 @@ $('#submitEcardButton').click(function(event) {
     }
   })
 })
+
+function clearEcard () {
+  $('#messageOutput').text('');
+  $('#recipientOutput').text('');
+  $('#recipient').text('');
+  $('#canvas').css('background-color', '');
+  $('#canvas').css('background-image', '');
+  $('#canvas img').remove();
+}
