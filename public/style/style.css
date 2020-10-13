@@ -166,3 +166,7 @@ small {
   width: 5px;
   height: 5px;
 }
+
+.loading {
+  display: none;
+}

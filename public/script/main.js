@@ -11,6 +11,9 @@ function loadHomePage () {
   pageIdList.forEach(function(page){
     document.getElementById(page).addEventListener("click", changePage, false);
   });
+}
+
+$('#notification_icon').click(function() {
   $.ajax({
     type: 'GET',
     xhrFields: {
@@ -21,6 +24,12 @@ function loadHomePage () {
     crossDomain: true,
     contentType: false,
     processData: false,
+    beforeSend: function() {
+      $('#loading_notifications').show();
+    },
+    complete: function(){
+      $('#loading_notifications').hide();
+    }, 
     success: function(response) {
       let notifications = response.data;
       let allNotifications = [];
@@ -37,6 +46,9 @@ function loadHomePage () {
                 src="http://localhost:3000/images/ecards/${notification.content}"
               >
             </div>
+            <div>
+
+            </div>
             <div class="dropdown-divider"></div>
           `); 
         }
@@ -44,7 +56,7 @@ function loadHomePage () {
       $('#notifications').append(allNotifications.join(''));
     }
   })
-}
+})
 
 function changePage() {
   var currentSelector = document.getElementById(currentSelectorId);
