@@ -46,7 +46,7 @@ $('#notification_icon').click(function() {
                 src="http://localhost:3000/images/ecards/${notification.content}"
               />
               <div class="small">
-                ${moment(notification.created_at, "YYYYMMDD").fromNow()}
+                ${moment(notification.created_at).startOf('hour').fromNow()}
               </div>
             </div>
             <div class="dropdown-divider"></div>
