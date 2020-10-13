@@ -33,6 +33,10 @@ $('#notification_icon').click(function() {
     success: function(response) {
       let notifications = response.data;
       let allNotifications = [];
+      function getDate (date) {
+        console.log(moment("20111031", "YYYYMMDD").fromNow())
+        return date;
+      }
       $.each(notifications, function(index, notification) {
         if(notification.type === 'ecard') {
           allNotifications.push(`
@@ -44,10 +48,10 @@ $('#notification_icon').click(function() {
                 class="img-fluid"
                 style="width: 200px; height: 180px;"
                 src="http://localhost:3000/images/ecards/${notification.content}"
-              >
-            </div>
-            <div>
-
+              />
+              <div class="small">
+                ${moment(notification.created_at, "YYYYMMDD").fromNow()}
+              </div>
             </div>
             <div class="dropdown-divider"></div>
           `); 
