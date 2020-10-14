@@ -109,7 +109,7 @@ $('#submitEcardButton').click(function(event) {
 function clearEcard () {
   $('#messageOutput').text('');
   $('#recipientOutput').text('');
-  $('#recipient').text('');
+  $('#recipient').val('');
   $('#canvas').css('background-color', '');
   $('#canvas').css('background-image', '');
   $('#canvas img').remove();
