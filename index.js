@@ -9,6 +9,13 @@ const app = express();
 const http = require('http').createServer(app);
 socket.listen(http);
 
+app.use(function(req, res, next) {
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type');
+  next();
+});
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(express.static(__dirname + '/public'));
@@ -16,7 +23,7 @@ app.use(express.static(__dirname + '/public'));
 app.use(cookieParser('secret key'));
 app.use(session({
   secret: '123456cat',
-  resave: true,
+  resave: false,
   saveUninitialized: true,
   rolling: true,
   cookie: { maxAge: 60000 * 60 * 24 }

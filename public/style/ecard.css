@@ -1,0 +1,99 @@
+.colors {
+  width: 30px;
+	height: 30px;
+	margin: 1px;
+	cursor: pointer;
+	border: 2px solid black;
+}
+
+#blue {
+	background-color: blue
+}
+
+#green {
+	background-color: green
+}
+
+#purple {
+	background-color: purple
+}
+
+#yellow {
+	background-color: yellow
+}
+
+#red {
+	background-color: red
+}
+
+#orange {
+	background-color: orange
+}
+
+#gray {
+	background-color: gray
+}
+
+.texture {
+	width: 30px;
+	height: 30px;
+	margin: 1px;
+	cursor: pointer;
+	border: 2px solid black;
+}
+
+#circles {
+	background-image: url('../images/card-texture/texture-circles.png');
+}
+
+#cloth {
+	background-image: url('../images/card-texture/texture-cloth.png');
+}
+
+#paper {
+	background-image: url('../images/card-texture/texture-paper.png');
+}
+
+#swirls {
+	background-image: url('../images/card-texture/texture-swirls.png');
+}
+
+#ecardBackground {
+	background-image:url('../images/background/card-background.jpg');
+  background-repeat:no-repeat;
+	height:513px;
+	width:369px;
+	margin:0px auto;
+}
+
+#canvas {
+	width:338px;
+	height:469px;
+	position:relative !important;
+	top:33px !important;
+	left:16px;
+	z-index:1; /* So we can place the stickers above */
+	overflow:hidden;
+}
+
+#messageOutput {
+	margin:25px 5px 2px 5px;
+	text-align: center;
+	font-family: papyrus;
+	height: 80px;
+	width: 100%;
+	font-size: 45px;
+}
+
+#recipientOutput {
+	margin:5px 5px 2px 5px;
+	text-align: center;
+	font-family: papyrus;
+	height: 80px;
+	width: 100%;
+	font-size: 45px;
+}
+
+.stickers_on_card {
+	cursor: move;
+}

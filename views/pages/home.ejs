@@ -3,13 +3,49 @@
     <%- include ('../partials/common/head', { title:'SANGAI' }) %>
   <body onload="loadHomePage()">
     <nav class="navbar fixed-top navbar-light">
-      <a class="navbar-brand text-white" href="#">SANGAI</a>
-      <% if(loggedInUser) { %>
-        <span class="text-white" id="currentUser">
-          <%- loggedInUser.username %>
-        </span>
-      <% } %>
-      <a class="text-white" href="/logout"> Logout </a>
+      <div class="navbar-header pull-left">
+        <a class="navbar-brand text-white" href="#">SANGAI</a>
+      </div>
+      <div class="navbar-header pull-right" style="display: inline-block;">
+        <% if(loggedInUser) { %>
+
+          <div class="dropdown dropdown" style="display: inline-block ">
+            <a class="nav-link p-1" href="#" id="notification" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i 
+                class="material-icons" 
+                id="notification_icon" 
+                style="font-size: 20px; color: white;"
+              >
+                notifications
+              </i>
+              <span class="presence notification-dot" id="notification_dot"></span>
+            </a>
+            <div 
+              class="dropdown-menu dropdown-menu-right scrollable-menu" 
+              aria-labelledby="notification"
+              id="notifications"
+            >
+              <span id="loading_notifications" class="loading">
+                <img src="http://localhost:3000/images/loading.svg" />
+              </span>
+            </div>
+          </div>
+
+          <div class="dropdown dropdown" style="display: inline-block">
+            <a class="nav-link dropdown-toggle p-1" href="#" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <span class="text-white" id="currentUser">
+                <%- loggedInUser.username %>
+              </span>
+            </a>
+            <div 
+              class="dropdown-menu dropdown-menu-right" 
+              aria-labelledby="dropdownMenuButton"
+            >
+              <a class="dropdown-item" href="/logout"> Logout </a>
+            </div>
+          </div>
+        <% } %>
+      </div>
     </nav>    
     <div class="container-fluid">
       <% if (messages.success) { %>
@@ -48,7 +84,7 @@
       </div>
 
       <div id="page-create" class="inactive">
-        <h1>Create Page</h1>
+        <%- include('../partials/ecard.ejs') %>
       </div>
 
       <div id="page-account" class="inactive">
@@ -85,6 +121,7 @@
     </footer>
     <script src="/script/ejs-3.1.5/lib/bundle.js"></script>
     <script src="/script/chat.js"></script>
+    <script src="/script/notification.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <script>
       const socket = io();

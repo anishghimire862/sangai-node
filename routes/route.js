@@ -2,7 +2,16 @@ const conn = require('../database');
 const userFunction = require('../functions/user');
 const chatroomFunction = require('../functions/chatroom');
 const { body, validationResult } = require('express-validator');
+const multer = require('multer');
 let session;
+
+const multerStorage = require('../multer');
+const upload = multer({storage: multerStorage.storage})
+
+const notificationsApi = require('../api/notifications');
+const ecardApi = require('../api/ecard');
+const userApi = require('../api/user');
+
 module.exports = function(app) {
   app.get('/', function(req, res) {
     req.session.loggedIn ? res.redirect('/home') : res.render('index');
@@ -21,7 +30,6 @@ module.exports = function(app) {
     let allUsers = await userFunction.getAllUsers();
     let chatrooms = await chatroomFunction.getAllChatrooms();
     res.render('home', { allUsers: allUsers, chatrooms: chatrooms });
-    // req.session.loggedIn ? res.render('home') : res.render('index');
   })
 
   app.post('/register', [
@@ -101,6 +109,18 @@ module.exports = function(app) {
       res.redirect('/');
     })
   });
+
+  app.post('/ecard', upload.single('ecard'), (req, res, next) => {
+    ecardApi.postEcard(req, res, next);
+  })
+
+  app.get('/notifications', (req,res) => {
+    notificationsApi.getNotifications(req, res);
+  })
+
+  app.get('/valid_users/:username', (req,res) => {
+    userApi.isValidUser(req, res)
+  })
 
   function isLoggedIn(req, res, next) {
     if(req.session.loggedIn) {
