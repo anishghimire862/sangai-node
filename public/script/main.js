@@ -176,6 +176,8 @@ function loadFeeds(skip=0) {
                   </span>
                 </button>
               </div>
+              <div id="commentsList${feed.feedId}"> 
+              </div>
               <div class="p-1">
                 <button type="submit" class="btn btn-link small p-0 m-0 addComment" id="addCommentButton${feed.feedId}">Add a comment</button>
                 <button type="submit" class="btn btn-link small p-0 m-0 closeCommentButton d-none" id="closeCommentButton${feed.feedId}">Close</button>
