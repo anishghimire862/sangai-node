@@ -26,7 +26,7 @@
               id="notifications"
             >
               <span id="loading_notifications" class="loading">
-                <img src="http://localhost:3000/images/loading.svg" />
+                <img src="http://192.168.1.17:3000/images/loading.svg" />
               </span>
             </div>
           </div>
@@ -68,11 +68,19 @@
             <div class="tab-content">
               <div class="tab-pane active p-2" id="chat_home_tab">
                 Users
-                <ul id="usersList" class="list-unstyled">
-                </ul>
+                <div class="row">
+                  <div class="col-12 col-sm-6 col-md-3">
+                    <ul id="usersList" class="list-unstyled">
+                    </ul>
+                  </div>
+                </div>
                 Chatrooms
-                <ul id="chatroomsList" class="list-unstyled">
-                </ul>
+                <div class="row">
+                  <div class="col-12 col-sm-6 col-md-3">
+                    <ul id="chatroomsList" class="list-unstyled">
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -80,7 +88,7 @@
       </div>
 
       <div id="page-feed" class="inactive">
-        <h1>Feed Page</h1>
+        <%- include('../partials/feed.ejs') %>
       </div>
 
       <div id="page-create" class="inactive">
