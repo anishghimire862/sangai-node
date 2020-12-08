@@ -9,9 +9,9 @@ $(document).ready(function() {
 
     parsedAllUsers.map((user) => {
       if(data.includes(user.username)) {
-        users.unshift({ username: user.username, presence: 'online' })
+        users.unshift({ username: user.username, presence: 'online', avatar: user.avatar, status: user.status })
       } else {
-        users.push({ username: user.username, presence: 'offline' })
+        users.push({ username: user.username, presence: 'offline', avatar: user.avatar, status: user.status })
       }
     });
 
@@ -19,13 +19,21 @@ $(document).ready(function() {
     $.each(usersExceptLoggedUser, function(index, user) {
       let presence = user.presence === 'online' ? `<span class='presence online-presence'></span>` : `<span class='presence offline-presence'></span>`;
       allUsersList.push(`
-        <li class="users-list">
-          <span>
-            ${presence}
-          </span>
-          <a href="#" class="open-new-tab" id="user_${user.username}">
-            ${user.username}
-          </a>
+        <li class="users-list mt-1">
+          <div class="d-flex p-1">
+            <img class="avatar" src="http://192.168.1.17:3000/images/avatars/${user.avatar}">
+            <div class="list-group-item list-group-item-action flex-column align-items-start modify-bootstrap-list">
+              <div class="d-flex w-100 justify-content-between">
+                <a href="#" class="open-new-tab" id="user_${user.username}">
+                  ${user.username}
+                </a>
+                <span>
+                  ${presence}
+                </span>
+              </div>
+              <div class="small"> ${user.status} </div>
+            </div>
+          </div>
         </li>
       `);
     })
@@ -33,10 +41,24 @@ $(document).ready(function() {
     $.each(parsedAllChatrooms, function(index, chatroom) {
       allChatroomsList.push(`
         <li class="users-list">
-          <span class='presence online-presence'></span>
-          <a href="#" class="open-new-tab" id="room_${chatroom.chatroom_name}">
-            ${chatroom.chatroom_name}
-          </a>
+          <div class="d-flex p-1">
+          <i 
+            class="material-icons avatar" 
+            id="notification_icon" 
+            style="color: black;"
+          >
+            chat
+          </i>
+            <div class="list-group-item list-group-item-action flex-column align-items-start modify-bootstrap-list">
+              <div class="d-flex w-100 justify-content-between">
+                <a href="#" class="open-new-tab" id="room_${chatroom.chatroom_name}">
+                  ${chatroom.chatroom_name}
+                </a>
+                <span class='presence online-presence'></span>
+              </div>
+              <div class="small"> ${chatroom.chatroom_description} </div>
+            </div>
+          </div>
         </li>
       `);
     })
@@ -216,7 +238,7 @@ $(document).ready(function() {
               <form action="#" id="messageForm_${receiverUserName}">
                 <div class="input-group">
                   <input type="hidden" value="${receiverUserName}" id="receiverUserName" />
-                  <textarea class="form-control" id="messageContent" rows="1" placeholder="Type your message here..." required style="resize:none"></textarea>
+                  <textarea class="form-control textarea-resize" id="messageContent" rows="1" placeholder="Type your message here..." required></textarea>
                   <button class="btn btn-sm btn-outline-primary input-group-addon ml-1" id="sendMessageButton">Send</button>
                 </div>
               </form>
