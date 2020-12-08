@@ -170,3 +170,28 @@ small {
 .loading {
   display: none;
 }
+
+.avatar {
+  width: 30px;
+  height: 30px;
+}
+
+.modify-bootstrap-list {
+  padding: 0;
+  background-color: #f5f5f5;
+  border: none;
+  line-height: 1.2;
+}
+
+.textarea-resize {
+  resize: none
+}
+
+.feed-textarea {
+  background-color:  #f5f5f5;
+}
+
+.feed-header {
+  background-color: #fff;
+}
+
