@@ -117,7 +117,47 @@ $(document).on('click', '.viewCommentsButton', function() {
     contentType: false,
     processData: false, 
     success: function(response) {
-      console.log(response)
+      let comments = response.data;
+      let allComments = [];
+      $.each(comments, function(index, comment) {
+        allComments.push(`
+          <div class="card m-4">
+            <div class="card-header feed-header d-flex p-2">
+              <img class="avatar" src="http://192.168.1.17:3000/images/avatars/${comment.creatorAvatar}">
+              <span class="mt-1"> ${comment.creatorUsername} </span>
+              <div class="d-flex w-100 justify-content-end">
+                <div 
+                  class="mt-1 small"
+                > 
+                  ${moment(comment.commentCreatedAt).fromNow()}
+                </div>
+                  <div class="dropdown dropdown d-flex mt-1">
+                    <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                      <i 
+                        class="material-icons" 
+                        id="notification_icon" 
+                        style="font-size: 20px; color: black;"
+                      >
+                        more_vert
+                      </i>
+                    </a>
+                    <div class="dropdown-menu">
+                      <a class="dropdown-item" href="#">Update Feed</a>
+                      <a class="dropdown-item" href="#">Delete Feed</a>
+                    </div>        
+                  </div>
+                </div>
+              </div>
+              <div class="card-body p-2">
+                <p class="card-text">
+                  ${comment.content}
+                </p>
+              </div>
+            </div>
+          </div>
+        `);
+      })
+      $(`#commentsList${post_id}`).append(allComments.join(''));
     }
   })
 })
