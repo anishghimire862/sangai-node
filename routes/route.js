@@ -11,6 +11,7 @@ const upload = multer({storage: multerStorage.storage})
 const notificationsApi = require('../api/notifications');
 const ecardApi = require('../api/ecard');
 const userApi = require('../api/user');
+const feedApi = require('../api/feed');
 
 module.exports = function(app) {
   app.get('/', function(req, res) {
@@ -120,6 +121,27 @@ module.exports = function(app) {
 
   app.get('/valid_users/:username', (req,res) => {
     userApi.isValidUser(req, res)
+  })
+
+  app.post('/feeds', (req, res) => {
+    feedApi.postFeed(req, res)
+  })
+
+  app.post('/comments', (req, res) => {
+    feedApi.postComment(req, res)
+  })
+
+  app.post('/like_feed', (req, res) => {
+    feedApi.likeFeed(req, res)
+  })
+
+  app.get('/feeds/:skip', (req, res) => {
+    let skip = req.params.skip;
+    feedApi.getFeeds(req, res, skip)
+  })
+
+  app.get('/comments/:feedId', (req, res) => {
+    feedApi.getComments(req, res)
   })
 
   function isLoggedIn(req, res, next) {
