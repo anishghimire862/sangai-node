@@ -32,10 +32,13 @@ module.exports = {
       'users.avatar as creatorAvatar, feed.content as content, feed.id as feedId, ' +
       'feed.created_at as feedCreatedAt, ' +
       'COUNT(likes.post_id) AS likedByCount, ' +
+      'COUNT(comments.feed_id) AS commentCount, ' +
       'COUNT(if(likes.username = ?, likes.username, NULL )) AS likedByCurrentUser ' +
-      'FROM feed INNER JOIN users ON users.username=feed.creator ' + 
-      'LEFT JOIN likes on likes.post_id = feed.id ' +
+      'FROM feed LEFT JOIN users ON users.username=feed.creator ' + 
+      'LEFT JOIN likes on feed.id  = likes.post_id ' +
+      'LEFT JOIN comments on feed.id = comments.feed_id ' +
       'GROUP BY feedId ORDER BY feedId DESC LIMIT ' + limit, currentUser, function(err, data) {
+        console.log(err)
         res.json({data})
     })
   },

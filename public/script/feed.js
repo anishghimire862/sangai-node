@@ -106,6 +106,7 @@ $(document).on('click', '.submitComment', function() {
 
 $(document).on('click', '.viewCommentsButton', function() {
   let post_id = $(this).attr('id').substr(18);
+  $(`#commentsList${post_id}`).empty();
   $.ajax({
     type: 'GET',
     xhrFields: {
