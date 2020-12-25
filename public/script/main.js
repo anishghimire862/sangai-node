@@ -45,7 +45,7 @@ $('#notification_icon').click(function() {
               <img 
                 class="img-fluid"
                 style="width: 200px; height: 180px;"
-                src="http://192.168.1.17:3000/images/ecards/${notification.content}"
+                src="/images/ecards/${notification.content}"
               />
               <div class="small">
                 ${moment(notification.created_at).fromNow()}
@@ -108,7 +108,7 @@ function loadFeeds(skip=0) {
         allFeeds.push(`
           <div class="card mt-2">
             <div class="card-header feed-header d-flex p-1">
-              <img class="avatar" src="http://192.168.1.17:3000/images/avatars/${feed.creatorAvatar}">
+              <img class="avatar" src="/images/avatars/${feed.creatorAvatar}">
               <span class="mt-1"> ${feed.creatorUsername} </span>
               <div class="d-flex w-100 justify-content-end">
                 <div 

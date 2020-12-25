@@ -21,7 +21,7 @@ $(document).ready(function() {
       allUsersList.push(`
         <li class="users-list mt-1">
           <div class="d-flex p-1">
-            <img class="avatar" src="http://192.168.1.17:3000/images/avatars/${user.avatar}">
+            <img class="avatar" src="/images/avatars/${user.avatar}">
             <div class="list-group-item list-group-item-action flex-column align-items-start modify-bootstrap-list">
               <div class="d-flex w-100 justify-content-between">
                 <a href="#" class="open-new-tab" id="user_${user.username}">

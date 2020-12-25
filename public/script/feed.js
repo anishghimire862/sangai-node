@@ -124,7 +124,7 @@ $(document).on('click', '.viewCommentsButton', function() {
         allComments.push(`
           <div class="card m-4">
             <div class="card-header feed-header d-flex p-2">
-              <img class="avatar" src="http://192.168.1.17:3000/images/avatars/${comment.creatorAvatar}">
+              <img class="avatar" src="/images/avatars/${comment.creatorAvatar}">
               <span class="mt-1"> ${comment.creatorUsername} </span>
               <div class="d-flex w-100 justify-content-end">
                 <div 
