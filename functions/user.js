@@ -3,8 +3,8 @@ module.exports =  {
   checkIfUserEmailExists (email) {
     return new Promise((resolve, reject) => {
       conn.query('SELECT username FROM users WHERE email=?', [email], (error, result, fields) => {
-        if(error) reject(err);
-        result.length > 0 ? resolve(true) : resolve(false);
+        if(error) reject(error);
+        result && result.length > 0 ? resolve(true) : resolve(false);
       })
     })
   },
@@ -12,8 +12,8 @@ module.exports =  {
   checkIfUsernameExists (username) {
     return new Promise((resolve, reject) => {
       conn.query('SELECT username FROM users WHERE username=?', [username], (error, result, fields) => {
-        if(error) reject(err);
-        result.length > 0 ? resolve(true) : resolve(false);
+        if(error) reject(error);
+        result && result.length > 0 ? resolve(true) : resolve(false);
       })
     })
   },

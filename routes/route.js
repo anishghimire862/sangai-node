@@ -86,7 +86,7 @@ module.exports = function(app) {
     
     if(email_or_username && password) {
       conn.query('SELECT * FROM users WHERE (email = ? OR username = ?) AND password = ?', [email_or_username, email_or_username, password], function(err, data) {
-        if(data.length > 0) {
+        if(data && data.length > 0) {
           session = req.session;
           req.session.loggedIn = true;
           req.session.loggedInUser = data[0]
