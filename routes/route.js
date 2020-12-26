@@ -1,7 +1,18 @@
 const conn = require('../database');
-const userController = require('../controllers/user');
+const userFunction = require('../functions/user');
+const chatroomFunction = require('../functions/chatroom');
 const { body, validationResult } = require('express-validator');
+const multer = require('multer');
 let session;
+
+const multerStorage = require('../multer');
+const upload = multer({storage: multerStorage.storage})
+
+const notificationsApi = require('../api/notifications');
+const ecardApi = require('../api/ecard');
+const userApi = require('../api/user');
+const feedApi = require('../api/feed');
+
 module.exports = function(app) {
   app.get('/', function(req, res) {
     req.session.loggedIn ? res.redirect('/home') : res.render('index');
@@ -16,10 +27,10 @@ module.exports = function(app) {
     req.session.loggedIn ? res.redirect('/home') : res.render('register', { user: user, formErrors: []});
   });
 
-  // place isLoggedIn after '/home', isLoggedIn
-  app.get('/home', function(req, res) {
-    res.render('home');
-    // req.session.loggedIn ? res.render('home') : res.render('index');
+  app.get('/home', isLoggedIn, async function(req, res) {
+    let allUsers = await userFunction.getAllUsers();
+    let chatrooms = await chatroomFunction.getAllChatrooms();
+    res.render('home', { allUsers: allUsers, chatrooms: chatrooms });
   })
 
   app.post('/register', [
@@ -43,8 +54,8 @@ module.exports = function(app) {
       res.render('register', { user: user, formErrors: formErrors });
     }
 
-    const isEmailExists = await userController.checkIfUserEmailExists(user.email);
-    const isUsernameExists = await userController.checkIfUsernameExists(user.username);
+    const isEmailExists = await userFunction.checkIfUserEmailExists(user.email);
+    const isUsernameExists = await userFunction.checkIfUsernameExists(user.username);
     if(isEmailExists) {
       req.flash('error', 'Email already exists. Please select another email.')
       res.render('register', { user: user, formErrors: formErrors });
@@ -75,9 +86,10 @@ module.exports = function(app) {
     
     if(email_or_username && password) {
       conn.query('SELECT * FROM users WHERE (email = ? OR username = ?) AND password = ?', [email_or_username, email_or_username, password], function(err, data) {
-        if(data.length > 0) {
+        if(data && data.length > 0) {
           session = req.session;
           req.session.loggedIn = true;
+          req.session.loggedInUser = data[0]
           res.redirect('/home')
         } else {
           req.flash('error', 'Incorrect username/email or password.');
@@ -98,6 +110,39 @@ module.exports = function(app) {
       res.redirect('/');
     })
   });
+
+  app.post('/ecard', upload.single('ecard'), (req, res, next) => {
+    ecardApi.postEcard(req, res, next);
+  })
+
+  app.get('/notifications', (req,res) => {
+    notificationsApi.getNotifications(req, res);
+  })
+
+  app.get('/valid_users/:username', (req,res) => {
+    userApi.isValidUser(req, res)
+  })
+
+  app.post('/feeds', (req, res) => {
+    feedApi.postFeed(req, res)
+  })
+
+  app.post('/comments', (req, res) => {
+    feedApi.postComment(req, res)
+  })
+
+  app.post('/like_feed', (req, res) => {
+    feedApi.likeFeed(req, res)
+  })
+
+  app.get('/feeds/:skip', (req, res) => {
+    let skip = req.params.skip;
+    feedApi.getFeeds(req, res, skip)
+  })
+
+  app.get('/comments/:feedId', (req, res) => {
+    feedApi.getComments(req, res)
+  })
 
   function isLoggedIn(req, res, next) {
     if(req.session.loggedIn) {

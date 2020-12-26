@@ -1,0 +1,57 @@
+<div>
+  <div class="row">
+    <div class="col-12 col-sm-6" id="ecardControls">
+      <form>
+        <div>
+          <h2>Enter recipient username</h2>	
+          <input class="form-control" id='recipient' />
+          <span class="small text-danger loading" id="invalid_username"> Not a valid sangai username!!</span>
+        </div>
+        <h2> Pick a color </h2>
+        <div class="form-inline">
+          <div class='colors' id='blue'></div>
+          <div class='colors' id='green'></div>
+          <div class='colors' id='purple'></div>
+          <div class='colors' id='yellow'></div>
+          <div class='colors' id='red'></div>
+          <div class='colors' id='orange'></div>
+          <div class='colors' id='gray'></div>  
+        </div>
+        <h2> Pick a texture </h2>
+        <div class="form-inline">
+          <div class='texture' id='circles'></div>
+          <div class='texture' id='cloth'></div>
+          <div class='texture' id='paper'></div>
+          <div class='texture' id='swirls'></div>  
+        </div>
+        <h2>Pick a message</h2>
+        <select class="form-control form-control-sm" id="ecardMessage">
+          <option>Happy Birthday</option>
+          <option>Thank You</option>
+          <option>Congratulations</option>
+          <option>I Miss You</option>
+          <option>Get Well Soon</option>
+        </select>
+        <h2>Click a sticker to add</h2>
+        <div class="form-inline">
+          <img class='stickers' src='/images/stickers/sticker-green-gift.png' alt='Green gift sticker'>
+          <img class='stickers' src='/images/stickers/sticker-heart.png' alt='Heart sticker'>
+          <img class='stickers' src='/images/stickers/sticker-yellow-gift.png' alt='Yellow gift sticker'>
+          <img class='stickers' src='/images/stickers/sticker-star.png' alt='Star sticker'>    
+        </div>
+        <div class="text-right">
+          <button type="button" class="btn btn-outline-primary" id="refreshEcardButton">Start Over</button>
+          <button type="button" class="btn btn-outline-primary" id="submitEcardButton" disabled>Send</button>
+        </div>
+      </form>
+    </div>
+    <div class="col-12 col-sm-6 d-flex justify-content-center mt-4">
+      <div id="ecardBackground">
+        <div id="canvas">
+          <div id="messageOutput"></div>
+          <div id ="recipientOutput"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
