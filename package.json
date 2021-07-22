@@ -5,7 +5,8 @@
   "author": "Anish Ghimire",
   "license": "MIT",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "build": "npm run build --production"
   },
   "nodemonConfig": {
     "ignore": [
