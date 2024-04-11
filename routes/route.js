@@ -28,6 +28,7 @@ module.exports = function(app) {
   });
 
   app.get('/home', isLoggedIn, async function(req, res) {
+    console.log('going to home', isLoggedIn)
     let allUsers = await userFunction.getAllUsers();
     let chatrooms = await chatroomFunction.getAllChatrooms();
     res.render('home', { allUsers: allUsers, chatrooms: chatrooms });
@@ -83,20 +84,25 @@ module.exports = function(app) {
   app.post('/login', function(req, res) {
     const email_or_username = req.body.email_or_username;
     const password = req.body.password;
-    
+
+    console.log(email_or_username, password, 'email or username and password')
     if(email_or_username && password) {
       conn.query('SELECT * FROM users WHERE (email = ? OR username = ?) AND password = ?', [email_or_username, email_or_username, password], function(err, data) {
         if(data && data.length > 0) {
+          console.log('users data', data)
           session = req.session;
           req.session.loggedIn = true;
           req.session.loggedInUser = data[0]
+          console.log(req.session, 'session')
           res.redirect('/home')
         } else {
+          console.log('incorrect creds')
           req.flash('error', 'Incorrect username/email or password.');
           res.redirect('/')
         }
       })
     } else {
+      console.log('blank creds')
       req.flash('error', 'Username/email and password can not be blank.');
       res.redirect('/')
     }
