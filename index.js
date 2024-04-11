@@ -10,7 +10,7 @@ const http = require('http').createServer(app);
 socket.listen(http);
 
 app.use(function(req, res, next) {
-  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.setHeader('Access-Control-Allow-Origin', 'https://atuufkfxv9qr3bfb5418.cleavr.one');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, content-type');
   next();
@@ -42,6 +42,6 @@ app.set('view engine','ejs');
 
 const conn = require('./database');
 
-http.listen(3000, () => {
+http.listen(8272, () => {
   console.log("Server is Running...")
 });
